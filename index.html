@@ -3,925 +3,542 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>골드 퀘스트 (Blooket Style)</title>
+  <title>골드 퀘스트 라이브 (Gold Quest Live)</title>
+  <!-- Firebase SDK (CDN 방식) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- QR Code 생성 라이브러리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <style>
     :root {
-      --bg: #1e1b4b;
-      --panel: #2e1065;
-      --card-bg: #3b0764;
+      --bg: #0b0728;
+      --panel: #1b134b;
+      --card: #271b69;
       --gold: #fbbf24;
-      --gold-dark: #d97706;
+      --gold-glow: rgba(251, 191, 36, 0.5);
       --accent: #a855f7;
-      --accent-glow: rgba(168, 85, 247, 0.4);
-      --success: #22c55e;
       --danger: #ef4444;
+      --success: #22c55e;
       --text: #ffffff;
-      --text-muted: #cbd5e1;
+      --text-muted: #94a3b8;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
-      user-select: none;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; user-select: none; }
+    body { background: radial-gradient(circle at center, #241763, #09051d); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; overflow-x: hidden; }
+
+    /* 화면 진동 효과 (피습 시) */
+    .screen-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-5px, 0, 0); }
+      20%, 80% { transform: translate3d(7px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-9px, 0, 0); }
+      40%, 60% { transform: translate3d(9px, 0, 0); }
     }
 
-    body {
-      background: radial-gradient(circle at center, #312e81, #0f172a);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      overflow-x: hidden;
-    }
+    /* 피습 시 붉은 경보 플래시 */
+    .red-flash { position: fixed; inset: 0; background: rgba(239, 68, 68, 0.5); z-index: 999; pointer-events: none; animation: flash 0.4s ease-out; }
+    @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
 
-    /* Top Nav */
-    .top-bar {
-      width: 100%;
-      max-width: 850px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+    .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .card { background: var(--panel); border: 2px solid #3c2a99; border-radius: 20px; padding: 28px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.6); position: relative; }
 
-    .title {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--gold);
-      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    /* ================= 1. 호스트(선생님 화면) 스타일 ================= */
+    .host-header { display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #3c2a99; padding-bottom: 16px; }
+    .host-title { font-size: 1.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
+    .pin-display { font-size: 2.2rem; font-weight: 900; color: #38bdf8; letter-spacing: 2px; }
 
-    .btn-admin {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.2s;
-    }
+    .lobby-body { display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; margin-top: 20px; }
+    .qr-box { background: white; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: fit-content; margin: 0 auto; }
+    .qr-box span { color: #0f172a; font-weight: 800; font-size: 0.9rem; }
 
-    .btn-admin:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+    .student-grid { background: #0f092e; border: 1px solid #3c2a99; border-radius: 16px; padding: 16px; min-height: 250px; max-height: 320px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
+    .student-badge { background: #3b2894; border: 1px solid #6347d4; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; animation: pop 0.2s ease; }
 
-    .main-layout {
-      width: 100%;
-      max-width: 850px;
-      display: grid;
-      grid-template-columns: 2.2fr 1fr;
-      gap: 16px;
-    }
+    .host-controls { display: flex; gap: 12px; margin-top: 20px; width: 100%; justify-content: flex-end; align-items: center; }
+    .time-select { background: #0f092e; color: white; border: 1px solid #3c2a99; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 1rem; }
+    .btn-start { background: linear-gradient(135deg, #22c55e, #15803d); color: white; border: none; padding: 14px 36px; border-radius: 12px; font-size: 1.2rem; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4); transition: transform 0.15s ease; }
+    .btn-start:hover { transform: scale(1.05); }
 
-    /* 왼쪽 게임 플레이 구역 */
-    .game-area {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+    .host-timer { font-size: 2.8rem; font-weight: 900; color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+    .live-lb-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .live-lb-item { background: #0f092e; border: 1px solid #3c2a99; padding: 14px 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; font-weight: 800; }
+    .live-lb-item:first-child { border-color: var(--gold); background: linear-gradient(90deg, #3b2894, #0f092e); }
 
-    /* 내 골드 전광판 */
-    .gold-hud {
-      background: linear-gradient(135deg, #4c1d95, #2e1065);
-      border: 2px solid var(--gold);
-      border-radius: 16px;
-      padding: 18px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    }
+    /* ================= 2. 플레이어(학생 화면) 스타일 ================= */
+    .player-hud { display: flex; justify-content: space-between; align-items: center; width: 100%; background: #0f092e; border-radius: 14px; padding: 12px 20px; margin-bottom: 16px; border: 1px solid #3c2a99; }
+    .player-gold { font-size: 1.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 12px var(--gold-glow); }
 
-    .hud-player {
-      display: flex;
-      flex-direction: column;
-    }
+    .q-text { font-size: 1.3rem; font-weight: 800; min-height: 70px; line-height: 1.5; margin-bottom: 20px; }
+    .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+    .opt-btn { background: #130a3a; border: 2px solid #3c2a99; color: white; padding: 18px 14px; border-radius: 14px; font-size: 1.05rem; font-weight: 800; cursor: pointer; text-align: left; transition: all 0.15s; }
+    .opt-btn:active { transform: scale(0.96); }
 
-    .hud-player span:first-child {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
+    .chest-grid { display: flex; justify-content: center; gap: 16px; width: 100%; margin: 20px 0; }
+    .chest-btn { width: 30%; height: 160px; background: linear-gradient(145deg, #4c1d95, #2e1065); border: 3px solid var(--gold); border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+    .chest-btn:hover { transform: translateY(-8px) scale(1.05); border-color: white; }
+    .chest-btn span:first-child { font-size: 3.5rem; }
 
-    .hud-player span:last-child {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: #38bdf8;
-    }
+    .target-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 240px; overflow-y: auto; margin-top: 14px; }
+    .target-btn { background: #3b2894; border: 1px solid var(--gold); color: white; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; }
+    .target-btn:hover { background: var(--gold); color: #0b0728; }
 
-    .hud-gold-display {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+    .screen.active { display: flex; }
 
-    .hud-gold-icon {
-      font-size: 2rem;
-      filter: drop-shadow(0 0 8px var(--gold));
-    }
+    @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
 
-    .hud-gold-value {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--gold);
-      text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
-    }
-
-    /* 화면 전환용 컨테이너 */
-    .screen-container {
-      background: rgba(23, 15, 48, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      min-height: 380px;
-      padding: 24px;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    /* 1. 퀴즈 뷰 */
-    .quiz-view {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-    }
-
-    .q-badge {
-      align-self: flex-start;
-      background: rgba(168, 85, 247, 0.2);
-      border: 1px solid var(--accent);
-      color: #e9d5ff;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 12px;
-    }
-
-    .q-text {
-      font-size: 1.25rem;
-      font-weight: 700;
-      line-height: 1.5;
-      min-height: 60px;
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .btn-opt {
-      background: #1e1b4b;
-      border: 2px solid #4338ca;
-      color: white;
-      padding: 18px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s ease;
-    }
-
-    .btn-opt:hover:not(:disabled) {
-      background: #312e81;
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    .btn-opt.correct {
-      background: rgba(34, 197, 94, 0.3) !important;
-      border-color: var(--success) !important;
-    }
-
-    .btn-opt.wrong {
-      background: rgba(239, 68, 68, 0.3) !important;
-      border-color: var(--danger) !important;
-    }
-
-    /* 2. 상자 선택 뷰 (Chest Pick) */
-    .chest-view {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .chest-instruction {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--gold);
-      text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-    }
-
-    .chests-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      width: 100%;
-    }
-
-    .chest-box {
-      width: 140px;
-      height: 150px;
-      background: linear-gradient(145deg, #6b21a8, #3b0764);
-      border: 3px solid var(--gold);
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .chest-box:hover {
-      transform: translateY(-8px) scale(1.05);
-      border-color: #fff;
-      box-shadow: 0 12px 25px rgba(251, 191, 36, 0.4);
-    }
-
-    .chest-icon {
-      font-size: 3.5rem;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-    }
-
-    .chest-label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-top: 6px;
-      color: var(--gold);
-    }
-
-    /* 3. 보상 발표 뷰 (Chest Result) */
-    .result-view {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      text-align: center;
-    }
-
-    .result-icon {
-      font-size: 4.5rem;
-      animation: bounce 0.6s infinite alternate ease-in-out;
-    }
-
-    .result-title {
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--gold);
-      text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
-    }
-
-    .result-desc {
-      font-size: 1rem;
-      color: var(--text-muted);
-    }
-
-    .btn-continue {
-      margin-top: 10px;
-      background: linear-gradient(135deg, #eab308, #ca8a04);
-      color: #0f172a;
-      border: none;
-      padding: 12px 36px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(234, 179, 8, 0.4);
-      transition: all 0.2s;
-    }
-
-    .btn-continue:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #facc15, #eab308);
-    }
-
-    /* 오른쪽 리더보드 */
-    .leaderboard-card {
-      background: rgba(23, 15, 48, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .lb-header {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--gold);
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 10px;
-    }
-
-    .lb-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .lb-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .lb-item.me {
-      background: linear-gradient(90deg, rgba(168, 85, 247, 0.3), rgba(59, 130, 246, 0.3));
-      border: 1px solid var(--accent);
-      font-weight: 800;
-    }
-
-    .lb-rank {
-      width: 24px;
-      font-weight: 900;
-      color: var(--text-muted);
-    }
-
-    .lb-item:first-child .lb-rank { color: #f59e0b; }
-    .lb-item:nth-child(2) .lb-rank { color: #cbd5e1; }
-    .lb-item:nth-child(3) .lb-rank { color: #b45309; }
-
-    .lb-name {
-      flex: 1;
-      text-align: left;
-      padding-left: 8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .lb-score {
-      font-weight: 800;
-      color: var(--gold);
-    }
-
-    /* 교사용 모달 */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      padding: 16px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-card {
-      background: #1e1b4b;
-      border: 1px solid #4338ca;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 600px;
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #4338ca;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .form-group label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .form-input {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: white;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-    }
-
-    .btn-submit {
-      background: var(--success);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-sub {
-      background: #334155;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.7); }
-      70% { transform: scale(1.08); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes bounce {
-      from { transform: translateY(0); }
-      to { transform: translateY(-10px); }
-    }
-
-    @media (max-width: 720px) {
-      .main-layout { grid-template-columns: 1fr; }
-      .options-grid { grid-template-columns: 1fr; }
-      .chest-box { width: 95px; height: 120px; }
-      .chest-icon { font-size: 2.5rem; }
+    @media (max-width: 650px) {
+      .lobby-body { grid-template-columns: 1fr; }
+      .opt-grid { grid-template-columns: 1fr; }
+      .target-list { grid-template-columns: 1fr; }
+      .chest-btn { height: 130px; }
+      .chest-btn span:first-child { font-size: 2.8rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="title">🏆 골드 퀘스트 (Gold Quest)</div>
-    <button class="btn-admin" onclick="openAdminModal()">⚙️ 문제 관리자</button>
-  </div>
+  <!-- 적 습격 시 붉은 점멸 레이어 -->
+  <div id="red-flash" style="display: none;" class="red-flash"></div>
 
-  <div class="main-layout">
-    <!-- 왼쪽 게임 구역 -->
-    <div class="game-area">
-      <!-- 골드 전광판 -->
-      <div class="gold-hud">
-        <div class="hud-player">
-          <span>PLAYER</span>
-          <span>나 (탐험가)</span>
-        </div>
-        <div class="hud-gold-display">
-          <div class="hud-gold-icon">💰</div>
-          <div class="hud-gold-value" id="player-gold">0</div>
-        </div>
-      </div>
+  <div class="container">
 
-      <!-- 메인 스크린 (퀴즈 / 상자 / 결과 3단계 교체) -->
-      <div class="screen-container">
-        <!-- 1. 퀴즈 화면 -->
-        <div class="quiz-view" id="view-quiz">
-          <div class="q-badge" id="q-category">생명과학 미션</div>
-          <div class="q-text" id="q-text">문제를 불러오는 중...</div>
-          <div class="options-grid" id="options-container"></div>
-        </div>
-
-        <!-- 2. 상자 선택 화면 -->
-        <div class="chest-view" id="view-chest">
-          <div class="chest-instruction">🎁 행운의 상자 하나를 선택하세요!</div>
-          <div class="chests-row">
-            <div class="chest-box" onclick="pickChest(0)">
-              <div class="chest-icon">📦</div>
-              <div class="chest-label">상자 #1</div>
-            </div>
-            <div class="chest-box" onclick="pickChest(1)">
-              <div class="chest-icon">📦</div>
-              <div class="chest-label">상자 #2</div>
-            </div>
-            <div class="chest-box" onclick="pickChest(2)">
-              <div class="chest-icon">📦</div>
-              <div class="chest-label">상자 #3</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. 상자 개봉 결과 화면 -->
-        <div class="result-view" id="view-result">
-          <div class="result-icon" id="res-icon">✨</div>
-          <div class="result-title" id="res-title">+50 Gold!</div>
-          <div class="result-desc" id="res-desc">상자에서 금화를 발견했습니다!</div>
-          <button class="btn-continue" onclick="nextQuestion()">계속하기 ➔</button>
-        </div>
+    <!-- ================= 1. 모드 선택 화면 ================= -->
+    <div id="screen-select" class="screen card active" style="text-align: center; gap: 20px;">
+      <h1 style="color: var(--gold); font-size: 2.2rem; font-weight: 900;">🏆 GOLD QUEST LIVE</h1>
+      <p style="color: var(--text-muted);">실시간 뺏고 뺏기는 생명과학 퀴즈 배틀</p>
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 10px;">
+        <button class="btn-start" onclick="initHost()">👨‍🏫 교사 화면 (방 열기)</button>
+        <button class="btn-start" style="background: linear-gradient(135deg, #38bdf8, #0284c7);" onclick="initPlayerEntry()">📱 학생 화면 (참여하기)</button>
       </div>
     </div>
 
-    <!-- 오른쪽 실시간 랭킹 (라이벌 봇들과 경쟁) -->
-    <div class="leaderboard-card">
-      <div class="lb-header">
-        <span>🏆 순위표 (Leaderboard)</span>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">실시간</span>
-      </div>
-      <div class="lb-list" id="lb-list"></div>
-    </div>
-  </div>
-
-  <!-- 교사용 문제 관리 모달 -->
-  <div class="modal-overlay" id="admin-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="color: var(--gold);">⚙️ 문제 관리 센터</h3>
-        <button onclick="closeAdminModal()" style="background:transparent; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form onsubmit="handleAddNewQuestion(event)" style="display:flex; flex-direction:column; gap:10px;">
-          <div class="form-group">
-            <label>문제 발문</label>
-            <input type="text" class="form-input" id="in-q" placeholder="예: 광합성이 일어나는 세포 소기관은?" required />
-          </div>
-          <div class="form-group">
-            <label>정답 (자동 셔플됩니다)</label>
-            <input type="text" class="form-input" id="in-ans" placeholder="예: 엽록체" required />
-          </div>
-          <div class="form-group">
-            <label>오답 1</label>
-            <input type="text" class="form-input" id="in-w1" placeholder="예: 미토콘드리아" required />
-          </div>
-          <div class="form-group">
-            <label>오답 2</label>
-            <input type="text" class="form-input" id="in-w2" placeholder="예: 리보솜" required />
-          </div>
-          <div class="form-group">
-            <label>오답 3</label>
-            <input type="text" class="form-input" id="in-w3" placeholder="예: 골지체" required />
-          </div>
-          <button type="submit" class="btn-submit">➕ 문제 풀에 추가하기</button>
-        </form>
-
-        <div style="display:flex; gap:10px; padding-top:10px; border-top:1px solid #4338ca;">
-          <button class="btn-sub" style="flex:1;" onclick="exportQuestionsJSON()">📥 문제 내보내기 (.json)</button>
-          <button class="btn-sub" style="flex:1;" onclick="document.getElementById('file-in').click()">📤 문제 불러오기 (.json)</button>
-          <input type="file" id="file-in" style="display:none;" accept=".json" onchange="importQuestionsJSON(event)" />
+    <!-- ================= 2. 호스트: 대기실 화면 ================= -->
+    <div id="screen-host-lobby" class="screen card">
+      <div class="host-header">
+        <div>
+          <div class="host-title">🏆 생명과학 배틀 퀘스트</div>
+          <span style="color: var(--text-muted); font-size: 0.9rem;">학생들에게 아래 QR 코드를 보여주세요</span>
         </div>
-
-        <div style="margin-top:10px;">
-          <h4 style="font-size:0.85rem; margin-bottom:8px;">등록된 문제 (<span id="q-count">0</span>개)</h4>
-          <div id="q-list" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;"></div>
+        <div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">GAME PIN</span>
+          <div class="pin-display" id="host-pin-val">0000</div>
         </div>
       </div>
+
+      <div class="lobby-body">
+        <div class="qr-box">
+          <div id="qrcode"></div>
+          <span>카메라로 QR 스캔 후 입장</span>
+        </div>
+        <div>
+          <div style="font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span>참가 학생 목록</span>
+            <span id="player-count" style="color: #38bdf8;">0명 입장</span>
+          </div>
+          <div class="student-grid" id="student-grid"></div>
+        </div>
+      </div>
+
+      <div class="host-controls">
+        <select class="time-select" id="game-duration">
+          <option value="180">게임 시간: 3분</option>
+          <option value="300" selected>게임 시간: 5분</option>
+          <option value="420">게임 시간: 7분</option>
+          <option value="600">게임 시간: 10분</option>
+        </select>
+        <button class="btn-start" onclick="hostStartGame()">🔥 게임 시작 (전원 동시 출발)</button>
+      </div>
     </div>
+
+    <!-- ================= 3. 호스트: 실시간 순위 화면 (대형 스크린용) ================= -->
+    <div id="screen-host-live" class="screen card">
+      <div class="host-header">
+        <div class="host-title">⚡ 실시간 랭킹 순위표</div>
+        <div class="host-timer" id="host-timer-text">05:00</div>
+        <button onclick="hostEndGame()" style="background:#ef4444; border:none; color:white; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer;">게임 강제 종료</button>
+      </div>
+      <div class="live-lb-list" id="host-lb-list"></div>
+    </div>
+
+    <!-- ================= 4. 학생: 닉네임 입력 ================= -->
+    <div id="screen-player-login" class="screen card" style="max-width: 450px; text-align: center; gap: 16px;">
+      <h2 style="color: var(--gold); font-size: 1.8rem;">골드 퀘스트 입장</h2>
+      <input type="text" id="player-name-in" placeholder="이름(닉네임)을 입력하세요" maxlength="8" style="background:#0f092e; border:2px solid #3c2a99; color:white; padding:14px; border-radius:12px; font-size:1.1rem; width:100%; text-align:center; font-weight:800;" />
+      <button class="btn-start" style="width: 100%;" onclick="playerJoin()">대기실 입장 ➔</button>
+    </div>
+
+    <!-- ================= 5. 학생: 대기 중 화면 ================= -->
+    <div id="screen-player-wait" class="screen card" style="max-width: 450px; text-align: center; gap: 16px;">
+      <div style="font-size: 3rem; animation: bounce 1s infinite alternate;">⏳</div>
+      <h2 id="wait-name-display" style="color: #38bdf8;"></h2>
+      <p style="font-size: 1.1rem; font-weight: 700;">선생님이 게임을 시작하기를 기다리는 중...</p>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">전자칠판 화면을 주목하세요!</p>
+    </div>
+
+    <!-- ================= 6. 학생: 퀴즈 화면 ================= -->
+    <div id="screen-player-quiz" class="screen card">
+      <div class="player-hud">
+        <span id="player-my-name" style="font-weight: 800; color: #38bdf8;">나</span>
+        <div class="player-gold" id="player-gold-display">💰 0</div>
+      </div>
+      <div class="q-text" id="q-text">문제를 불러오는 중...</div>
+      <div class="opt-grid" id="q-options"></div>
+    </div>
+
+    <!-- ================= 7. 학생: 3개 상자 선택 ================= -->
+    <div id="screen-player-chest" class="screen card" style="text-align: center;">
+      <h2 style="color: var(--gold); font-size: 1.6rem; margin-bottom: 6px;">🎁 행운의 상자를 고르세요!</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">골드 획득, 배수, 스틸, 혹은 스왑이 숨겨져 있습니다.</p>
+      <div class="chest-grid">
+        <div class="chest-btn" onclick="handleChestPick(0)"><span>📦</span><span>상자 1</span></div>
+        <div class="chest-btn" onclick="handleChestPick(1)"><span>📦</span><span>상자 2</span></div>
+        <div class="chest-btn" onclick="handleChestPick(2)"><span>📦</span><span>상자 3</span></div>
+      </div>
+    </div>
+
+    <!-- ================= 8. 학생: 타겟 친구 강탈(Steal/Swap) 화면 ================= -->
+    <div id="screen-player-target" class="screen card" style="text-align: center;">
+      <h2 id="target-title" style="color: #ef4444; font-size: 1.5rem;">🦹 누구의 골드를 빼앗겠습니까?</h2>
+      <div class="target-list" id="target-list"></div>
+    </div>
+
+    <!-- ================= 9. 학생: 상자 결과 안내 ================= -->
+    <div id="screen-player-result" class="screen card" style="text-align: center; gap: 14px;">
+      <div id="res-icon" style="font-size: 4rem;">✨</div>
+      <h2 id="res-title" style="color: var(--gold); font-size: 1.8rem;">+100 Gold!</h2>
+      <p id="res-desc" style="color: var(--text-muted);">상자에서 대량의 금화를 발견했습니다!</p>
+      <button class="btn-start" onclick="playerNextQuestion()">다음 문제 ➔</button>
+    </div>
+
   </div>
 
   <script>
-    // 기본 탑재 생명과학 문제 풀
-    const defaultQuestions = [
-      {
-        q: "식물 세포에서 빛 에너지를 흡수하여 광합성을 수행하는 세포 소기관은?",
-        options: ["엽록체", "미토콘드리아", "리보솜", "골지체"],
-        answer: 0
-      },
-      {
-        q: "유기물을 분해하여 생명 활동에 필요한 ATP를 주로 생성하는 소기관은?",
-        options: ["미토콘드리아", "소포체", "중심체", "리소좀"],
-        answer: 0
-      },
-      {
-        q: "mRNA의 유전 정보를 바탕으로 단백질을 직접 합성하는 세포 내 구조는?",
-        options: ["리보솜", "액포", "세포벽", "핵소체"],
-        answer: 0
-      },
-      {
-        q: "동물 세포의 세포 분열 시 방추사를 형성하는 데 관여하는 소기관은?",
-        options: ["중심체", "엽록체", "골지체", "소포체"],
-        answer: 0
-      },
-      {
-        q: "가수 분해 효소가 들어 있어 세포 내 소화 및 이물질 분해를 담당하는 소기관은?",
-        options: ["리소좀", "리보솜", "핵", "미토콘드리아"],
-        answer: 0
-      }
+    /* ====================================================================
+       Firebase 설정 (선생님의 Firebase 키 적용 완료)
+       ==================================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIVt-SZ-0FcLfb3UaCMw0JSC9v0rB66bA",
+      authDomain: "quiz-quest-aaffc.firebaseapp.com",
+      databaseURL: "https://quiz-quest-aaffc-default-rtdb.firebaseio.com",
+      projectId: "quiz-quest-aaffc",
+      storageBucket: "quiz-quest-aaffc.firebasestorage.app",
+      messagingSenderId: "622531611074",
+      appId: "1:622531611074:web:5bebefb1ec63362da96e5b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 퀴즈 문제 풀 (생명과학 I 핵심 개념)
+    const questions = [
+      { q: "식물 세포에서 빛 에너지를 흡수하여 광합성을 수행하는 세포 소기관은?", opts: ["엽록체", "미토콘드리아", "리보솜", "골지체"], ans: 0 },
+      { q: "유기물을 분해하여 생명 활동에 필요한 ATP를 주로 생성하는 소기관은?", opts: ["미토콘드리아", "소포체", "중심체", "리소좀"], ans: 0 },
+      { q: "mRNA 정보를 바탕으로 단백질을 직접 합성하는 세포 내 구조는?", opts: ["리보솜", "액포", "핵소체", "세포벽"], ans: 0 },
+      { q: "동물 세포의 세포 분열 시 방추사를 형성하는 데 관여하는 소기관은?", opts: ["중심체", "엽록체", "골지체", "소포체"], ans: 0 },
+      { q: "가수 분해 효소가 풍부하여 세포 내 소화 및 이물질 분해를 담당하는 소기관은?", opts: ["리소좀", "리보솜", "핵", "미토콘드리아"], ans: 0 }
     ];
 
-    let questions = [];
+    let gamePin = "ROOM1";
+    let myId = null;
+    let myName = "";
     let myGold = 0;
-    let currentQ = null;
+    let timerInterval = null;
+    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    // 가상 라이벌 봇들 (블루킷처럼 골드 경쟁)
-    let players = [
-      { name: "나 (탐험가)", gold: 0, isMe: true },
-      { name: "호기심많은여우", gold: 50, isMe: false },
-      { name: "열정적인판다", gold: 120, isMe: false },
-      { name: "우주비행사곰", gold: 30, isMe: false },
-      { name: "달리는부엉이", gold: 80, isMe: false }
-    ];
-
-    // 효과음 생성기 (AudioContext)
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(freq, type, duration) {
+    // 효과음 함수
+    function playSfx(freq, type, duration) {
       try {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        osc.type = type; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
       } catch(e) {}
     }
 
-    // 봇들의 자동 활동 (1.5초마다 가끔 문제 맞춰서 골드 변화)
-    setInterval(() => {
-      const bot = players[Math.floor(Math.random() * (players.length - 1)) + 1];
-      const delta = Math.floor(Math.random() * 40) + 10;
-      bot.gold += delta;
-      renderLeaderboard();
-    }, 2000);
-
-    function init() {
-      const saved = localStorage.getItem('gold_quest_questions');
-      if (saved) {
-        try { questions = JSON.parse(saved); } catch(e) { questions = [...defaultQuestions]; }
-      } else {
-        questions = [...defaultQuestions];
-      }
-
-      loadQuestion();
-      renderLeaderboard();
-      renderAdminList();
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
     }
 
-    function renderLeaderboard() {
-      // 내 점수 동기화
-      const me = players.find(p => p.isMe);
-      me.gold = myGold;
+    /* ====================================================================
+       교사 호스트 제어 로직
+       ==================================================================== */
+    function initHost() {
+      gamePin = Math.floor(1000 + Math.random() * 9000).toString();
+      document.getElementById('host-pin-val').textContent = gamePin;
+      switchScreen('screen-host-lobby');
 
-      // 골드 높은 순 정렬
-      players.sort((a, b) => b.gold - a.gold);
+      // 방 상태 초기화
+      db.ref(`games/${gamePin}`).set({
+        status: "LOBBY",
+        duration: 300,
+        startTime: 0,
+        players: {}
+      });
 
-      const listEl = document.getElementById('lb-list');
-      listEl.innerHTML = '';
+      // 학생 접속용 QR 코드 자동 생성
+      const joinUrl = window.location.href.split('?')[0] + `?pin=${gamePin}&role=player`;
+      document.getElementById("qrcode").innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), {
+        text: joinUrl,
+        width: 140,
+        height: 140
+      });
 
-      players.forEach((p, idx) => {
-        const item = document.createElement('div');
-        item.className = `lb-item ${p.isMe ? 'me' : ''}`;
-        item.innerHTML = `
-          <span class="lb-rank">#${idx + 1}</span>
-          <span class="lb-name">${p.name}</span>
-          <span class="lb-score">${p.gold.toLocaleString()} G</span>
-        `;
-        listEl.appendChild(item);
+      // 학생 실시간 입장 감지
+      db.ref(`games/${gamePin}/players`).on('value', snap => {
+        const val = snap.val() || {};
+        const grid = document.getElementById('student-grid');
+        grid.innerHTML = '';
+        const pList = Object.values(val);
+        document.getElementById('player-count').textContent = `${pList.length}명 입장`;
+
+        pList.forEach(p => {
+          const badge = document.createElement('div');
+          badge.className = 'student-badge';
+          badge.innerHTML = `👤 ${p.name}`;
+          grid.appendChild(badge);
+        });
       });
     }
 
-    // 1. 문제 출제
-    function loadQuestion() {
-      document.getElementById('view-quiz').style.display = 'flex';
-      document.getElementById('view-chest').style.display = 'none';
-      document.getElementById('view-result').style.display = 'none';
+    function hostStartGame() {
+      const dur = parseInt(document.getElementById('game-duration').value);
+      db.ref(`games/${gamePin}`).update({
+        status: "PLAYING",
+        duration: dur,
+        startTime: Date.now()
+      });
 
-      if (questions.length === 0) {
-        document.getElementById('q-text').textContent = "문제가 없습니다. 관리자 모드에서 추가해주세요!";
-        document.getElementById('options-container').innerHTML = '';
-        return;
-      }
+      switchScreen('screen-host-live');
 
-      currentQ = questions[Math.floor(Math.random() * questions.length)];
-      document.getElementById('q-text').textContent = currentQ.q;
-      const optContainer = document.getElementById('options-container');
-      optContainer.innerHTML = '';
+      // 타이머 시작
+      let remaining = dur;
+      timerInterval = setInterval(() => {
+        remaining--;
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        document.getElementById('host-timer-text').textContent = `${m}:${s}`;
 
-      const shuffled = currentQ.options
-        .map((text, idx) => ({ text, isCorrect: idx === currentQ.answer }))
-        .sort(() => Math.random() - 0.5);
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          hostEndGame();
+        }
+      }, 1000);
 
+      // 실시간 리더보드 중계
+      db.ref(`games/${gamePin}/players`).on('value', snap => {
+        const val = snap.val() || {};
+        const sorted = Object.values(val).sort((a, b) => b.gold - a.gold);
+        const lbEl = document.getElementById('host-lb-list');
+        lbEl.innerHTML = '';
+
+        sorted.forEach((p, idx) => {
+          const row = document.createElement('div');
+          row.className = 'live-lb-item';
+          row.innerHTML = `
+            <span>#${idx+1} ${p.name}</span>
+            <span style="color:var(--gold)">${p.gold.toLocaleString()} G</span>
+          `;
+          lbEl.appendChild(row);
+        });
+      });
+    }
+
+    function hostEndGame() {
+      db.ref(`games/${gamePin}`).update({ status: "ENDED" });
+      alert("게임이 종료되었습니다! 순위표를 확인하세요.");
+    }
+
+    /* ====================================================================
+       학생 플레이어 로직
+       ==================================================================== */
+    function initPlayerEntry() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('pin')) gamePin = urlParams.get('pin');
+      switchScreen('screen-player-login');
+    }
+
+    function playerJoin() {
+      const name = document.getElementById('player-name-in').value.trim();
+      if (!name) return alert("이름을 입력해주세요!");
+      myName = name;
+      myId = "p_" + Math.random().toString(36).substr(2, 9);
+
+      // DB에 플레이어 등록
+      db.ref(`games/${gamePin}/players/${myId}`).set({
+        id: myId,
+        name: myName,
+        gold: 0
+      });
+
+      document.getElementById('wait-name-display').textContent = `${myName} 님 대기 완료!`;
+      document.getElementById('player-my-name').textContent = myName;
+      switchScreen('screen-player-wait');
+
+      // 게임 상태 감지 (선생님이 시작 누르면 일제히 문제 출제)
+      db.ref(`games/${gamePin}/status`).on('value', snap => {
+        const st = snap.val();
+        if (st === "PLAYING") {
+          playSfx(587, 'triangle', 0.2);
+          setTimeout(() => playSfx(880, 'sine', 0.3), 150);
+          playerLoadQuestion();
+        } else if (st === "ENDED") {
+          alert("게임이 끝났습니다!");
+          location.reload();
+        }
+      });
+
+      // 골드 변화 및 도난 감지
+      db.ref(`games/${gamePin}/players/${myId}`).on('value', snap => {
+        const data = snap.val();
+        if (!data) return;
+        if (data.gold < myGold) {
+          // 골드를 뺏겼을 때! 붉은 점멸 + 화면 진동 + 경보음
+          triggerStolenAlert();
+        }
+        myGold = data.gold;
+        document.getElementById('player-gold-display').textContent = `💰 ${myGold.toLocaleString()} G`;
+      });
+    }
+
+    function triggerStolenAlert() {
+      const flash = document.getElementById('red-flash');
+      flash.style.display = 'block';
+      document.body.classList.add('screen-shake');
+      playSfx(150, 'sawtooth', 0.4);
+      setTimeout(() => {
+        flash.style.display = 'none';
+        document.body.classList.remove('screen-shake');
+      }, 500);
+    }
+
+    function playerLoadQuestion() {
+      switchScreen('screen-player-quiz');
+      const q = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById('q-text').textContent = q.q;
+
+      const optsEl = document.getElementById('q-options');
+      optsEl.innerHTML = '';
+
+      const shuffled = q.opts.map((opt, i) => ({ text: opt, isCorrect: i === q.ans })).sort(() => Math.random() - 0.5);
       shuffled.forEach(item => {
         const btn = document.createElement('button');
-        btn.className = 'btn-opt';
+        btn.className = 'opt-btn';
         btn.textContent = item.text;
-        btn.onclick = () => handleAnswer(item.isCorrect, btn);
-        optContainer.appendChild(btn);
-      });
-    }
-
-    // 2. 답안 검증
-    function handleAnswer(isCorrect, btn) {
-      const allBtns = document.querySelectorAll('.btn-opt');
-      allBtns.forEach(b => b.disabled = true);
-
-      if (isCorrect) {
-        btn.classList.add('correct');
-        playTone(523.25, 'triangle', 0.1);
-        setTimeout(() => playTone(659.25, 'sine', 0.15), 80);
-        setTimeout(() => playTone(783.99, 'sine', 0.25), 160);
-
-        // 정답 시 상자 선택 화면으로 전환
-        setTimeout(() => {
-          document.getElementById('view-quiz').style.display = 'none';
-          document.getElementById('view-chest').style.display = 'flex';
-        }, 600);
-      } else {
-        btn.classList.add('wrong');
-        playTone(220, 'sawtooth', 0.3);
-        // 오답 시 잠시 후 다음 문제로
-        setTimeout(loadQuestion, 800);
-      }
-    }
-
-    // 3. 블루킷 골드 퀘스트 확률 테이블
-    function pickChest(chestIndex) {
-      playTone(400, 'sine', 0.1);
-      setTimeout(() => playTone(800, 'sine', 0.2), 100);
-
-      const roll = Math.random();
-      let result = { icon: "💰", title: "+50 Gold", desc: "상자에서 금화를 발견했습니다!" };
-
-      // 라이벌 봇 중 1등 찾기 (나 제외)
-      const opponents = players.filter(p => !p.isMe);
-      const topOpponent = opponents.sort((a,b) => b.gold - a.gold)[0];
-
-      if (roll < 0.30) {
-        // 일반 골드 +30~80
-        const gain = Math.floor(Math.random() * 50) + 30;
-        myGold += gain;
-        result = { icon: "💰", title: `+${gain} Gold!`, desc: "상자에서 금화 더미를 발견했습니다!" };
-      } else if (roll < 0.50) {
-        // 대박 골드 +100~250
-        const gain = Math.floor(Math.random() * 150) + 100;
-        myGold += gain;
-        result = { icon: "💎", title: `+${gain} Gold!!`, desc: "희귀한 대형 보물 상자였습니다!" };
-      } else if (roll < 0.65) {
-        // 1.5배 또는 2배 뻥튀기
-        const mult = Math.random() < 0.6 ? 1.5 : 2.0;
-        const before = myGold;
-        myGold = Math.floor(myGold * mult);
-        const diff = myGold - before;
-        result = { icon: "⚡", title: `x${mult} 배수 보너스!`, desc: `보유 골드가 뻥튀기되었습니다! (+${diff} G)` };
-      } else if (roll < 0.80 && topOpponent && topOpponent.gold > 20) {
-        // 상대 20% 스틸 (Steal 20%)
-        const stolen = Math.floor(topOpponent.gold * 0.25);
-        topOpponent.gold -= stolen;
-        myGold += stolen;
-        result = { icon: "🦹", title: `골드 스틸 (+${stolen} G)`, desc: `'${topOpponent.name}' 님의 골드를 빼앗아왔습니다!` };
-      } else if (roll < 0.90 && topOpponent && topOpponent.gold > myGold) {
-        // 골드 스왑 (SWAP)
-        const temp = myGold;
-        myGold = topOpponent.gold;
-        topOpponent.gold = temp;
-        result = { icon: "🔄", title: "골드 SWAP!!", desc: `1등인 '${topOpponent.name}' 님과 골드를 맞바꿨습니다!` };
-      } else if (roll < 0.95 && myGold > 30) {
-        // 25% 손실 함정
-        const loss = Math.floor(myGold * 0.25);
-        myGold -= loss;
-        result = { icon: "💣", title: `함정 폭탄! (-${loss} G)`, desc: "상자 속 폭탄이 터져 골드를 잃었습니다." };
-      } else {
-        // 꽝
-        result = { icon: "💨", title: "꽝! (텅 빈 상자)", desc: "상자가 비어 있었습니다. 아쉽네요!" };
-      }
-
-      // 화면에 결과 표시
-      document.getElementById('player-gold').textContent = myGold.toLocaleString();
-      document.getElementById('res-icon').textContent = result.icon;
-      document.getElementById('res-title').textContent = result.title;
-      document.getElementById('res-desc').textContent = result.desc;
-
-      document.getElementById('view-chest').style.display = 'none';
-      document.getElementById('view-result').style.display = 'flex';
-
-      renderLeaderboard();
-    }
-
-    function nextQuestion() {
-      loadQuestion();
-    }
-
-    // 관리자 모달 함수들
-    function openAdminModal() {
-      document.getElementById('admin-modal').classList.add('active');
-    }
-
-    function closeAdminModal() {
-      document.getElementById('admin-modal').classList.remove('active');
-    }
-
-    function renderAdminList() {
-      document.getElementById('q-count').textContent = questions.length;
-      const list = document.getElementById('q-list');
-      list.innerHTML = '';
-
-      questions.forEach((q, idx) => {
-        const item = document.createElement('div');
-        item.style.cssText = "background:#0f172a; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;";
-        item.innerHTML = `
-          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">#${idx+1} ${q.q}</span>
-          <button onclick="deleteQuestion(${idx})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-weight:bold;">삭제</button>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function handleAddNewQuestion(e) {
-      e.preventDefault();
-      const q = document.getElementById('in-q').value.trim();
-      const ans = document.getElementById('in-ans').value.trim();
-      const w1 = document.getElementById('in-w1').value.trim();
-      const w2 = document.getElementById('in-w2').value.trim();
-      const w3 = document.getElementById('in-w3').value.trim();
-
-      questions.push({
-        q: q,
-        options: [ans, w1, w2, w3],
-        answer: 0
-      });
-
-      localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
-      e.target.reset();
-      renderAdminList();
-      alert("문제가 성공적으로 등록되었습니다!");
-    }
-
-    function deleteQuestion(idx) {
-      if (confirm("이 문제를 삭제하시겠습니까?")) {
-        questions.splice(idx, 1);
-        localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
-        renderAdminList();
-        loadQuestion();
-      }
-    }
-
-    function exportQuestionsJSON() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 2));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "gold_quest_questions.json");
-      dlAnchor.click();
-    }
-
-    function importQuestionsJSON(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const imported = JSON.parse(evt.target.result);
-          if (Array.isArray(imported)) {
-            questions = imported;
-            localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
-            renderAdminList();
-            loadQuestion();
-            alert("문제를 성공적으로 불러왔습니다!");
+        btn.onclick = () => {
+          if (item.isCorrect) {
+            playSfx(523, 'triangle', 0.1);
+            setTimeout(() => playSfx(783, 'sine', 0.2), 100);
+            switchScreen('screen-player-chest');
+          } else {
+            playSfx(200, 'sawtooth', 0.25);
+            btn.style.borderColor = "#ef4444";
+            setTimeout(playerLoadQuestion, 700);
           }
-        } catch(err) {
-          alert("유효한 JSON 파일 형식이 아닙니다.");
-        }
-      };
-      reader.readAsText(file);
+        };
+        optsEl.appendChild(btn);
+      });
     }
 
-    window.onload = init;
+    // 상자 오픈 로직
+    function handleChestPick(idx) {
+      const roll = Math.random();
+      playSfx(440, 'sine', 0.1);
+
+      if (roll < 0.35) {
+        // 일반 골드 +50~100
+        const gain = Math.floor(Math.random() * 50) + 50;
+        updateMyGold(myGold + gain);
+        showResult("💰", `+${gain} Gold!`, "상자에서 금화를 획득했습니다.");
+      } else if (roll < 0.55) {
+        // 대박 골드 +200
+        updateMyGold(myGold + 200);
+        showResult("💎", "+200 Gold!!", "대형 보물 상자를 발견했습니다!");
+      } else if (roll < 0.70) {
+        // 배수 (1.5x)
+        const updated = Math.floor(myGold * 1.5) + 20;
+        updateMyGold(updated);
+        showResult("⚡", "1.5x 배수 보너스!", "보유 골드가 1.5배로 뻥튀기되었습니다.");
+      } else if (roll < 0.85) {
+        // 친구 골드 25% 강탈 (STEAL)
+        promptSelectTarget("STEAL");
+      } else {
+        // 1등과 골드 맞바꾸기 (SWAP)
+        promptSelectTarget("SWAP");
+      }
+    }
+
+    function promptSelectTarget(mode) {
+      db.ref(`games/${gamePin}/players`).once('value', snap => {
+        const players = snap.val() || {};
+        const others = Object.values(players).filter(p => p.id !== myId);
+
+        if (others.length === 0) {
+          updateMyGold(myGold + 50);
+          showResult("💰", "+50 Gold", "다른 플레이어가 없어 금화를 획득했습니다.");
+          return;
+        }
+
+        switchScreen('screen-player-target');
+        document.getElementById('target-title').textContent = mode === "STEAL" ? "🦹 누구의 골드를 25% 훔치겠습니까?" : "🔄 누구와 골드를 맞바꾸겠습니까(SWAP)?";
+        const tList = document.getElementById('target-list');
+        tList.innerHTML = '';
+
+        others.sort((a,b) => b.gold - a.gold).forEach(target => {
+          const btn = document.createElement('button');
+          btn.className = 'target-btn';
+          btn.innerHTML = `${target.name} (${target.gold} G)`;
+          btn.onclick = () => executeAttack(mode, target);
+          tList.appendChild(btn);
+        });
+      });
+    }
+
+    function executeAttack(mode, target) {
+      if (mode === "STEAL") {
+        const stolen = Math.floor(target.gold * 0.25);
+        db.ref(`games/${gamePin}/players/${target.id}`).update({ gold: Math.max(0, target.gold - stolen) });
+        updateMyGold(myGold + stolen);
+        showResult("🦹", `골드 강탈 (+${stolen} G)`, `'${target.name}' 님의 골드를 빼앗아왔습니다!`);
+      } else if (mode === "SWAP") {
+        const temp = myGold;
+        updateMyGold(target.gold);
+        db.ref(`games/${gamePin}/players/${target.id}`).update({ gold: temp });
+        showResult("🔄", "골드 SWAP 완료!", `'${target.name}' 님과 골드를 전격 맞바꿨습니다!`);
+      }
+    }
+
+    function updateMyGold(val) {
+      myGold = val;
+      db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+    }
+
+    function showResult(icon, title, desc) {
+      document.getElementById('res-icon').textContent = icon;
+      document.getElementById('res-title').textContent = title;
+      document.getElementById('res-desc').textContent = desc;
+      switchScreen('screen-player-result');
+    }
+
+    function playerNextQuestion() {
+      playerLoadQuestion();
+    }
+
+    // QR 코드로 찍고 들어왔을 때 자동 학생 화면 전환
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('role') === 'player' && params.get('pin')) {
+        gamePin = params.get('pin');
+        switchScreen('screen-player-login');
+      }
+    };
   </script>
 </body>
 </html>
