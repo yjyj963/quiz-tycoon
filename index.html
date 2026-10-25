@@ -275,7 +275,7 @@
       cursor: not-allowed;
     }
 
-    /* 플로팅 애니메이션 텍스트 (+\$\$\$) */
+    /* 플로팅 애니메이션 텍스트 (+$$$) */
     .floating-text {
       position: absolute;
       font-weight: 800;
@@ -457,7 +457,7 @@
   <div class="container">
     <!-- 목표 진행률 -->
     <div class="goal-banner">
-      <span>🎯 목표: 연구비 \$50,000 달성</span>
+      <span>🎯 목표: 연구비 $50,000 달성</span>
       <span id="goal-progress">0%</span>
     </div>
 
@@ -465,11 +465,11 @@
     <div class="hud">
       <div class="hud-stat money">
         <div class="label">보유 연구비</div>
-        <div class="value" id="hud-money">\$0</div>
+        <div class="value" id="hud-money">$0</div>
       </div>
       <div class="hud-stat">
         <div class="label">기본 정답 보상</div>
-        <div class="value" id="hud-reward">+\$10</div>
+        <div class="value" id="hud-reward">+$10</div>
       </div>
       <div class="hud-stat streak">
         <div class="label">연속 정답(Streak)</div>
@@ -477,7 +477,7 @@
       </div>
       <div class="hud-stat">
         <div class="label">초당 자동 연구비</div>
-        <div class="value" id="hud-passive">+\$0/s</div>
+        <div class="value" id="hud-passive">+$0/s</div>
       </div>
     </div>
 
@@ -506,7 +506,7 @@
           </div>
           <div class="shop-item-footer">
             <span class="shop-level" id="lvl-reward">Lv. 1</span>
-            <button class="btn-buy" id="btn-buy-reward" onclick="buyReward()">\$50 구매</button>
+            <button class="btn-buy" id="btn-buy-reward" onclick="buyReward()">$50 구매</button>
           </div>
         </div>
 
@@ -518,7 +518,7 @@
           </div>
           <div class="shop-item-footer">
             <span class="shop-level" id="lvl-streak">Lv. 1</span>
-            <button class="btn-buy" id="btn-buy-streak" onclick="buyStreak()">\$120 구매</button>
+            <button class="btn-buy" id="btn-buy-streak" onclick="buyStreak()">$120 구매</button>
           </div>
         </div>
 
@@ -530,7 +530,7 @@
           </div>
           <div class="shop-item-footer">
             <span class="shop-level" id="lvl-insur">Lv. 0 (50% 감면)</span>
-            <button class="btn-buy" id="btn-buy-insur" onclick="buyInsur()">\$200 구매</button>
+            <button class="btn-buy" id="btn-buy-insur" onclick="buyInsur()">$200 구매</button>
           </div>
         </div>
 
@@ -541,4 +541,381 @@
             <p>가만히 있어도 1초마다 연구비가 자동으로 들어옵니다.</p>
           </div>
           <div class="shop-item-footer">
-            <span class="shop-level" id="lvl-passive">Lv. 0 (+\$0/s)</span>
+            <span class="shop-level" id="lvl-passive">Lv. 0 (+$0/s)</span>
+            <button class="btn-buy" id="btn-buy-passive" onclick="buyPassive()">$300 구매</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 교사용 문제 관리자 모달 -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ 교사 문제 관리 센터</h3>
+        <button class="btn-close" onclick="closeAdminModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-q-form" onsubmit="handleAddNewQuestion(event)">
+          <div class="form-group">
+            <label>문제 발문</label>
+            <input type="text" class="form-input" id="input-q-text" placeholder="예: 세포 호흡을 통해 ATP를 생산하는 소기관은?" required />
+          </div>
+          <div class="form-group">
+            <label>정답 (1번 보기로 지정되며, 게임 중엔 자동 셔플됩니다)</label>
+            <input type="text" class="form-input" id="input-correct" placeholder="예: 미토콘드리아" required />
+          </div>
+          <div class="form-group">
+            <label>오답 1</label>
+            <input type="text" class="form-input" id="input-wrong-1" placeholder="예: 소포체" required />
+          </div>
+          <div class="form-group">
+            <label>오답 2</label>
+            <input type="text" class="form-input" id="input-wrong-2" placeholder="예: 골지체" required />
+          </div>
+          <div class="form-group">
+            <label>오답 3</label>
+            <input type="text" class="form-input" id="input-wrong-3" placeholder="예: 리소좀" required />
+          </div>
+          <button type="submit" class="btn-submit" style="margin-top: 10px;">➕ 문제 풀에 추가하기</button>
+        </form>
+
+        <div class="admin-actions">
+          <button class="btn-sub" onclick="exportQuestionsJSON()">📥 문제 내보내기 (.json)</button>
+          <button class="btn-sub" onclick="document.getElementById('import-file').click()">📤 문제 불러오기 (.json)</button>
+          <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importQuestionsJSON(event)" />
+        </div>
+
+        <div style="margin-top: 10px;">
+          <h4 style="font-size: 0.9rem; margin-bottom: 8px;">현재 등록된 문제 목록 (<span id="total-q-count">0</span>개)</h4>
+          <div id="q-list-container" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 기본 탑재 생명과학 문제 풀
+    const defaultQuestions = [
+      {
+        q: "식물 세포에서 빛 에너지를 흡수하여 광합성을 수행하는 세포 소기관은?",
+        options: ["엽록체", "미토콘드리아", "리보솜", "골지체"],
+        answer: 0
+      },
+      {
+        q: "유기물을 분해하여 생명 활동에 필요한 ATP를 주로 생성하는 소기관은?",
+        options: ["미토콘드리아", "소포체", "중심체", "리소좀"],
+        answer: 0
+      },
+      {
+        q: "mRNA의 유전 정보를 바탕으로 단백질을 직접 합성하는 세포 내 구조는?",
+        options: ["리보솜", "액포", "세포벽", "핵소체"],
+        answer: 0
+      },
+      {
+        q: "동물 세포의 세포 분열 시 방추사를 형성하는 데 관여하는 소기관은?",
+        options: ["중심체", "엽록체", "골지체", "소포체"],
+        answer: 0
+      },
+      {
+        q: "가수 분해 효소가 들어 있어 세포 내 소화 및 이물질 분해를 담당하는 소기관은?",
+        options: ["리소좀", "리보솜", "핵", "미토콘드리아"],
+        answer: 0
+      }
+    ];
+
+    // 상태 관리 (State)
+    let questions = [];
+    let money = 0;
+    let baseReward = 10;
+    let streak = 0;
+    let streakMultiplier = 5;
+    let insuranceRate = 0.5; // 오답 시 50% 감면
+    let passiveIncome = 0;
+
+    // 상점 레벨 및 비용
+    let lvlReward = 1, costReward = 50;
+    let lvlStreak = 1, costStreak = 120;
+    let lvlInsur = 0, costInsur = 200;
+    let lvlPassive = 0, costPassive = 300;
+
+    let currentQ = null;
+    const GOAL_MONEY = 50000;
+    let goalReached = false;
+
+    // 웹 오디오 API 효과음
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, type, duration) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    // 초기화
+    function init() {
+      const saved = localStorage.getItem('bio_tycoon_questions');
+      if (saved) {
+        try { questions = JSON.parse(saved); } catch(e) { questions = [...defaultQuestions]; }
+      } else {
+        questions = [...defaultQuestions];
+      }
+
+      setInterval(() => {
+        if (passiveIncome > 0) {
+          money += passiveIncome;
+          updateHUD();
+        }
+      }, 1000);
+
+      loadNextQuestion();
+      updateHUD();
+      renderAdminList();
+    }
+
+    // HUD 업데이트
+    function updateHUD() {
+      document.getElementById('hud-money').textContent = `$${money.toLocaleString()}`;
+      document.getElementById('hud-reward').textContent = `+$${baseReward + (streak * streakMultiplier)}`;
+      document.getElementById('hud-streak').textContent = `${streak}회`;
+      document.getElementById('hud-passive').textContent = `+$${passiveIncome}/s`;
+
+      // 목표 진행도
+      const progress = Math.min(100, Math.floor((money / GOAL_MONEY) * 100));
+      document.getElementById('goal-progress').textContent = `${progress}% ($${money.toLocaleString()} / $${GOAL_MONEY.toLocaleString()})`;
+
+      if (money >= GOAL_MONEY && !goalReached) {
+        goalReached = true;
+        setTimeout(() => alert("🎉 축하합니다! 연구비 $50,000를 달성하여 우수 생명과학 연구소로 선정되었습니다! 계속해서 자유롭게 연구를 확장해보세요!"), 200);
+      }
+
+      // 상점 버튼 상태 갱신
+      document.getElementById('lvl-reward').textContent = `Lv. ${lvlReward} (+$${baseReward})`;
+      document.getElementById('btn-buy-reward').textContent = `$${costReward.toLocaleString()} 구매`;
+      document.getElementById('btn-buy-reward').disabled = money < costReward;
+
+      document.getElementById('lvl-streak').textContent = `Lv. ${lvlStreak} (스트릭당 +$${streakMultiplier})`;
+      document.getElementById('btn-buy-streak').textContent = `$${costStreak.toLocaleString()} 구매`;
+      document.getElementById('btn-buy-streak').disabled = money < costStreak;
+
+      document.getElementById('lvl-insur').textContent = `Lv. ${lvlInsur} (${Math.round(insuranceRate * 100)}% 감면)`;
+      document.getElementById('btn-buy-insur').textContent = insuranceRate >= 0.9 ? "최대 레벨" : `$${costInsur.toLocaleString()} 구매`;
+      document.getElementById('btn-buy-insur').disabled = money < costInsur || insuranceRate >= 0.9;
+
+      document.getElementById('lvl-passive').textContent = `Lv. ${lvlPassive} (+$${passiveIncome}/s)`;
+      document.getElementById('btn-buy-passive').textContent = `$${costPassive.toLocaleString()} 구매`;
+      document.getElementById('btn-buy-passive').disabled = money < costPassive;
+    }
+
+    // 퀴즈 출제
+    function loadNextQuestion() {
+      if (questions.length === 0) {
+        document.getElementById('q-text').textContent = "등록된 문제가 없습니다. 관리자 모드에서 문제를 추가해주세요!";
+        document.getElementById('options-container').innerHTML = '';
+        return;
+      }
+
+      currentQ = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById('q-text').textContent = currentQ.q;
+      const optContainer = document.getElementById('options-container');
+      optContainer.innerHTML = '';
+
+      const shuffled = currentQ.options
+        .map((opt, i) => ({ text: opt, isCorrect: i === currentQ.answer }))
+        .sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = item.text;
+        btn.onclick = (e) => handleAnswer(item.isCorrect, btn, e);
+        optContainer.appendChild(btn);
+      });
+    }
+
+    // 정답 체크 & 경제 보상
+    function handleAnswer(isCorrect, btnElement, event) {
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach(b => b.disabled = true);
+
+      const quizCard = document.getElementById('quiz-card');
+      const floatEl = document.createElement('div');
+      floatEl.className = 'floating-text';
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        streak += 1;
+        const reward = baseReward + (streak * streakMultiplier);
+        money += reward;
+
+        floatEl.textContent = `+$${reward}`;
+        floatEl.style.color = "var(--gold)";
+        playBeep(587.33, 'triangle', 0.1);
+        setTimeout(() => playBeep(880, 'sine', 0.2), 80);
+      } else {
+        btnElement.classList.add('wrong');
+        streak = 0;
+        const loss = Math.floor(baseReward * (1 - insuranceRate));
+        money = Math.max(0, money - loss);
+
+        floatEl.textContent = loss > 0 ? `-$${loss}` : `$0 (보험 적용)`;
+        floatEl.style.color = "var(--danger)";
+        playBeep(220, 'sawtooth', 0.25);
+      }
+
+      // 플로팅 텍스트 위치 잡기
+      floatEl.style.left = `${quizCard.offsetWidth / 2 - 40}px`;
+      floatEl.style.top = `60px`;
+      quizCard.appendChild(floatEl);
+      setTimeout(() => floatEl.remove(), 800);
+
+      updateHUD();
+      setTimeout(loadNextQuestion, 650);
+    }
+
+    // 상점 구매 함수들
+    function buyReward() {
+      if (money >= costReward) {
+        money -= costReward;
+        baseReward += 15;
+        lvlReward++;
+        costReward = Math.floor(costReward * 1.8);
+        playBeep(700, 'sine', 0.15);
+        updateHUD();
+      }
+    }
+
+    function buyStreak() {
+      if (money >= costStreak) {
+        money -= costStreak;
+        streakMultiplier += 10;
+        lvlStreak++;
+        costStreak = Math.floor(costStreak * 2.1);
+        playBeep(700, 'sine', 0.15);
+        updateHUD();
+      }
+    }
+
+    function buyInsur() {
+      if (money >= costInsur && insuranceRate < 0.9) {
+        money -= costInsur;
+        insuranceRate = Math.min(0.9, insuranceRate + 0.15);
+        lvlInsur++;
+        costInsur = Math.floor(costInsur * 2.3);
+        playBeep(700, 'sine', 0.15);
+        updateHUD();
+      }
+    }
+
+    function buyPassive() {
+      if (money >= costPassive) {
+        money -= costPassive;
+        passiveIncome += 10;
+        lvlPassive++;
+        costPassive = Math.floor(costPassive * 2.0);
+        playBeep(700, 'sine', 0.15);
+        updateHUD();
+      }
+    }
+
+    // 관리자 모달 제어
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.add('active');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.remove('active');
+    }
+
+    function renderAdminList() {
+      document.getElementById('total-q-count').textContent = questions.length;
+      const list = document.getElementById('q-list-container');
+      list.innerHTML = '';
+
+      questions.forEach((q, idx) => {
+        const item = document.createElement('div');
+        item.className = 'question-list-item';
+        item.innerHTML = `
+          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">
+            <strong>#${idx+1}</strong> ${q.q}
+          </span>
+          <button class="btn-delete" onclick="deleteQuestion(${idx})">&times;</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function handleAddNewQuestion(e) {
+      e.preventDefault();
+      const qText = document.getElementById('input-q-text').value.trim();
+      const correct = document.getElementById('input-correct').value.trim();
+      const w1 = document.getElementById('input-wrong-1').value.trim();
+      const w2 = document.getElementById('input-wrong-2').value.trim();
+      const w3 = document.getElementById('input-wrong-3').value.trim();
+
+      const newQ = {
+        q: qText,
+        options: [correct, w1, w2, w3],
+        answer: 0
+      };
+
+      questions.push(newQ);
+      localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
+      document.getElementById('add-q-form').reset();
+      renderAdminList();
+      alert("문제가 성공적으로 등록되었습니다!");
+    }
+
+    function deleteQuestion(idx) {
+      if (confirm("이 문제를 삭제하시겠습니까?")) {
+        questions.splice(idx, 1);
+        localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
+        renderAdminList();
+        loadNextQuestion();
+      }
+    }
+
+    function exportQuestionsJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "quiz_questions.json");
+      dlAnchor.click();
+    }
+
+    function importQuestionsJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            questions = imported;
+            localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
+            renderAdminList();
+            loadNextQuestion();
+            alert("문제 데이터를 성공적으로 불러왔습니다!");
+          }
+        } catch(err) {
+          alert("유효한 JSON 파일이 아닙니다.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // 실행
+    window.onload = init;
+  </script>
+</body>
+</html>
