@@ -42,19 +42,19 @@
     .student-grid { background: #07111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; min-height: 220px; max-height: 280px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
     .student-badge { background: #1e3a5f; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 0.9rem; border: 1px solid #38bdf8; }
 
-    .host-settings-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; width: 100%; }
+    .host-settings-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; width: 100%; }
     .setting-box { background: #07111e; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 4px; }
     .setting-box label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
     .setting-box select { background: #07111e; border: none; color: white; font-weight: 800; font-size: 0.9rem; outline: none; }
 
-    /* 교사용 실시간 전체 순위판 & 통계 화면 */
+    /* 교사용 실시간 순위판 & 통계 화면 */
     .host-live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; width: 100%; max-height: 50vh; overflow-y: auto; }
     .live-lb-item { background: #07111e; border: 1px solid var(--card-border); padding: 12px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; font-weight: 800; }
     .live-lb-item.top1 { border-color: var(--gold); background: linear-gradient(90deg, #422c06, #07111e); }
     .live-lb-item.top2 { border-color: #cbd5e1; }
     .live-lb-item.top3 { border-color: #b45309; }
 
-    /* 문항별 오답률 통계 리포트 */
+    /* 문항별 오답률 리포트 */
     .report-card { width: 100%; background: #07111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-top: 12px; max-height: 45vh; overflow-y: auto; }
     .report-item { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .report-item:last-child { border-bottom: none; }
@@ -64,12 +64,12 @@
     .stat-bar-correct { height: 100%; background: var(--success); }
     .badge-tricky { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: #fca5a5; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; }
 
-    /* ================= 학생 슈팅 화면 (1945 해전 스타일) ================= */
+    /* ================= 학생 슈팅 화면 ================= */
     #game-wrapper { width: 100%; max-width: 460px; height: 96vh; position: relative; border-radius: 18px; overflow: hidden; border: 3px solid #38bdf8; background: #0b4f8a; display: none; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.9); touch-action: none; }
     #flightCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
 
     /* 상단 밀리터리 HUD */
-    .hud-top-frame { position: absolute; top: 8px; left: 8px; right: 8px; height: 54px; background: rgba(7, 17, 30, 0.85); border: 2px solid #fbbf24; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; z-index: 10; backdrop-filter: blur(4px); }
+    .hud-top-frame { position: absolute; top: 8px; left: 8px; right: 8px; height: 54px; background: rgba(7, 17, 30, 0.88); border: 2px solid #fbbf24; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; z-index: 10; backdrop-filter: blur(4px); }
     .hud-score-val { font-size: 1.25rem; font-weight: 900; color: var(--gold); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
     .hud-rank-tag { font-size: 0.8rem; font-weight: 800; color: #38bdf8; }
     .hud-spec-tag { font-size: 0.75rem; color: #86efac; font-weight: 800; text-align: center; }
@@ -88,7 +88,7 @@
     .opt-btn:hover { border-color: var(--cyan); background: #162a4a; }
     .opt-btn:active { transform: scale(0.98); }
 
-    /* 오답 10초 대기 락다운 */
+    /* 오답 대기 페널티 */
     .penalty-screen { position: absolute; inset: 0; background: rgba(185, 28, 28, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 60; gap: 14px; text-align: center; padding: 20px; }
     .penalty-count { font-size: 4.5rem; font-weight: 900; color: white; }
 
@@ -99,14 +99,12 @@
     .chest-btn:hover { transform: translateY(-5px); border-color: #fff; }
     .chest-btn span:first-child { font-size: 2.8rem; }
 
-    /* 보급 획득 알림 배너 (alert 창 대신 부드러운 인게임 모달) */
     .reward-toast { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); background: rgba(15, 30, 54, 0.95); border: 2px solid var(--gold); color: #fff; padding: 10px 18px; border-radius: 20px; font-weight: 900; font-size: 0.9rem; z-index: 40; display: none; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
 
-    /* 타겟 강탈 오버레이 */
     .target-overlay { position: absolute; inset: 0; background: rgba(7, 17, 30, 0.96); display: none; flex-direction: column; padding: 20px; z-index: 70; justify-content: center; gap: 12px; }
     .target-btn { background: #1e3a5f; border: 1px solid var(--gold); color: white; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; }
 
-    /* 최종 순위 화면 & 오답 노트 */
+    /* 최종 순위 화면 */
     .final-rank-screen { position: absolute; inset: 0; background: #07111e; display: none; flex-direction: column; padding: 20px; z-index: 90; overflow-y: auto; align-items: center; gap: 14px; }
     .podium-box { display: flex; align-items: flex-end; justify-content: center; gap: 12px; width: 100%; margin: 10px 0; }
     .podium-slot { display: flex; flex-direction: column; align-items: center; width: 30%; text-align: center; }
@@ -124,11 +122,11 @@
     .wrong-item-card .my-wrong { color: #fca5a5; font-size: 0.85rem; margin-bottom: 4px; }
     .wrong-item-card .correct-ans { color: #86efac; font-size: 0.85rem; font-weight: 700; }
 
-    /* 교사용 단원/문제 관리 모달 */
+    /* 교사용 모달 */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 16px; }
     .modal-card { background: #0f1e36; border: 2px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 720px; max-height: 90vh; display: flex; flex-direction: column; padding: 20px; gap: 12px; overflow-y: auto; }
 
-    @media (max-width: 700px) {
+    @media (max-width: 780px) {
       .lobby-body { grid-template-columns: 1fr; }
       .host-settings-bar { grid-template-columns: 1fr 1fr; }
       .host-live-grid { grid-template-columns: 1fr; }
@@ -183,6 +181,14 @@
             <option value="ALL">전체 단원 랜덤</option>
           </select>
         </div>
+        <div class="setting-box" style="border-color: var(--gold);">
+          <label style="color: var(--gold);">⚔️ 게임 난이도</label>
+          <select id="set-difficulty">
+            <option value="NORMAL" selected>보통 (추천 탄막)</option>
+            <option value="HARD">어려움 (물량 폭증)</option>
+            <option value="HELL">탄막 지옥 (맹공 모드)</option>
+          </select>
+        </div>
         <div class="setting-box">
           <label>전체 게임 시간</label>
           <select id="set-game-time">
@@ -192,12 +198,11 @@
           </select>
         </div>
         <div class="setting-box">
-          <label>문제 출현 주기 (슈팅 시간)</label>
+          <label>문제 주기 (슈팅)</label>
           <select id="set-quiz-interval">
             <option value="8">8초마다</option>
             <option value="10" selected>10초마다</option>
             <option value="15">15초마다</option>
-            <option value="20">20초마다</option>
           </select>
         </div>
         <div class="setting-box">
@@ -262,13 +267,9 @@
         <div style="font-size: 0.85rem; font-weight: 900; color: #fbbf24; background: rgba(0,0,0,0.5); padding: 6px 10px; border-radius: 8px;" id="hud-quiz-counter">QUIZ: 10s</div>
       </div>
 
-      <!-- 실시간 1~10위 티커 바 -->
       <div class="rank-ticker-bar" id="hud-rank-ticker"></div>
-
-      <!-- 보급 알림 토스트 -->
       <div class="reward-toast" id="reward-toast">⚡ 탄환 업그레이드 완료!</div>
 
-      <!-- 1945 태평양 해전 캔버스 -->
       <canvas id="flightCanvas"></canvas>
 
       <!-- 퀴즈 오버레이 -->
@@ -282,11 +283,11 @@
         <div style="display:flex; flex-direction:column; gap:10px; width:100%;" id="q-options"></div>
       </div>
 
-      <!-- 오답 시 10초 대기 페널티 -->
+      <!-- 오답 대기 페널티 -->
       <div class="penalty-screen" id="penalty-screen">
         <div style="font-size: 3.5rem;">🚨</div>
         <h2 style="font-size: 1.5rem;">오답! 출격 지연 페널티</h2>
-        <p style="color: #fecaca; font-size: 0.95rem;">문제가 열려 있는 10초 동안 대기 후 복귀합니다.</p>
+        <p style="color: #fecaca; font-size: 0.95rem;">문제가 열려 있는 동안 대기 후 복귀합니다.</p>
         <div class="penalty-count" id="penalty-count">10</div>
       </div>
 
@@ -307,7 +308,7 @@
         <div style="display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto;" id="target-list"></div>
       </div>
 
-      <!-- 게임 종료 후 전체 최종 순위 화면 + 개인별 맞춤 오답노트 -->
+      <!-- 최종 순위 화면 & 오답 노트 -->
       <div class="final-rank-screen" id="final-rank-screen">
         <h2 style="color: var(--gold); font-size: 1.8rem; font-weight: 900;">🏆 최종 순위표</h2>
         <div class="podium-box" id="podium-box"></div>
@@ -322,7 +323,7 @@
 
   </div>
 
-  <!-- 교사용 단원/문제 관리 모달 (추가 + 수정 + 삭제 + 클라우드 영구 저장) -->
+  <!-- 교사용 단원/문제 관리 모달 -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -404,8 +405,8 @@
     let quizLimitSec = 10;
     let currentPlayers = [];
     let myWrongAnswers = [];
+    let gameDifficulty = "NORMAL";
 
-    // 중복 루프 실행 방지 플래그 (속도 폭주 버그 완벽 차단)
     let hasGameStarted = false;
     let animFrameId = null;
 
@@ -476,6 +477,7 @@
           quizInterval: 10,
           quizLimit: 10,
           targetUnit: "ALL",
+          difficulty: "NORMAL",
           players: {},
           stats: {}
         });
@@ -506,6 +508,7 @@
       quizIntervalSec = parseInt(document.getElementById('set-quiz-interval').value);
       quizLimitSec = parseInt(document.getElementById('set-quiz-limit').value);
       const chosenUnit = document.getElementById('set-target-unit').value;
+      const chosenDiff = document.getElementById('set-difficulty').value;
 
       activeQuestions = chosenUnit === "ALL" ? [...globalQuestions] : globalQuestions.filter(q => q.unit === chosenUnit);
 
@@ -518,12 +521,13 @@
         quizInterval: quizIntervalSec,
         quizLimit: quizLimitSec,
         targetUnit: chosenUnit,
+        difficulty: chosenDiff,
         questions: activeQuestions,
         startTime: Date.now(),
         status: "PLAYING"
       });
 
-      document.getElementById('host-unit-label').textContent = `출제 단원: ${chosenUnit === 'ALL' ? '전체 단원' : chosenUnit}`;
+      document.getElementById('host-unit-label').textContent = `단원: ${chosenUnit === 'ALL' ? '전체 단원' : chosenUnit} | 난이도: ${chosenDiff}`;
       switchScreen('screen-host-live');
 
       let remain = dur;
@@ -599,7 +603,7 @@
     }
 
     /* ====================================================================
-       교사 문제 관리 (추가 / 수정 / 삭제 / 클라우드 저장)
+       교사 문제 관리
        ==================================================================== */
     function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
     function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; resetAdminForm(); }
@@ -690,7 +694,7 @@
     }
 
     /* ====================================================================
-       학생 플레이어 로직 (루프 중복 호출 완벽 차단)
+       학생 플레이어 로직
        ==================================================================== */
     function initPlayerEntry() {
       const p = new URLSearchParams(window.location.search);
@@ -708,7 +712,6 @@
       document.getElementById('wait-name-display').textContent = `${myName} 파일럿 대기 완료!`;
       switchScreen('screen-player-wait');
 
-      // 중요: 방 전체가 아니라 'status'만 단독 감지하여 점수 변동 시 게임이 재시작되지 않게 함!
       db.ref(`games/${gamePin}/status`).on('value', snap => {
         const status = snap.val();
         if (status === "PLAYING" && !hasGameStarted) {
@@ -718,6 +721,7 @@
             quizIntervalSec = g.quizInterval || 10;
             quizLimitSec = g.quizLimit || 10;
             activeQuestions = g.questions || seedQuestions;
+            gameDifficulty = g.difficulty || "NORMAL";
             startFlightMode();
           });
         } else if (status === "ENDED") {
@@ -725,7 +729,6 @@
         }
       });
 
-      // 실시간 Top 10 순위 및 내 점수 동기화
       db.ref(`games/${gamePin}/players`).on('value', snap => {
         const val = snap.val() || {};
         currentPlayers = Object.values(val).sort((a,b) => b.gold - a.gold);
@@ -760,20 +763,21 @@
     }
 
     /* ====================================================================
-       1945 태평양 해전 탄막 슈팅 엔진 (사진 디테일 & 속도 완화 완벽 적용)
+       1945 태평양 해전 탄막 슈팅 엔진 (패널티 삭제 & 실시간 체력바 구현)
        ==================================================================== */
     let canvas, ctx;
     let plane = {
       x: 200, y: 500, size: 28,
-      shotCount: 2,     // 기본 쌍발 화염탄
+      shotCount: 2,
       damage: 1,
-      fireDelay: 0.22,  // 초 단위 발사 간격
-      bulletSpeed: 380, // 초당 픽셀 속도
-      wingmen: 0,       // 좌우 호위기 수 (0~2)
-      scoreMult: 1      // 점수 배수
+      fireDelay: 0.20,
+      bulletSpeed: 400,
+      wingmen: 0,
+      scoreMult: 1,
+      shieldFlash: 0
     };
 
-    let bullets = [], enemies = [], explosions = [], clouds = [], islands = [];
+    let bullets = [], enemyBullets = [], enemies = [], explosions = [], clouds = [], islands = [];
     let isShootingActive = false;
     let quizCountdownTimer = null;
     let nextQuizTime = 10;
@@ -793,10 +797,8 @@
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
 
-      // 초기 해안 섬과 구름 배치
       initScenery();
 
-      // 터치 & 마우스 조종 이벤트 (1회만 등록)
       let isDragging = false;
       canvas.addEventListener('touchstart', (e) => { isDragging = true; movePlane(e.touches[0]); }, { passive: true });
       canvas.addEventListener('touchmove', (e) => { if (isDragging) movePlane(e.touches[0]); }, { passive: true });
@@ -855,55 +857,75 @@
       }, 1000);
     }
 
-    // 메인 60FPS 고정비율 게임 루프 (deltaTime 적용으로 기기 상관없이 일정하고 느긋한 속도)
+    // 메인 게임 루프
     function gameLoop(timestamp) {
       if (!isShootingActive) return;
 
       if (!lastFrameTime) lastFrameTime = timestamp;
-      const dt = Math.min(0.05, (timestamp - lastFrameTime) / 1000); // 초 단위 경과 시간
+      const dt = Math.min(0.05, (timestamp - lastFrameTime) / 1000);
       lastFrameTime = timestamp;
       propAngle += dt * 25;
 
-      // 1. 바다 물결 및 좌우 해안 섬 스크롤 렌더링
+      if (plane.shieldFlash > 0) plane.shieldFlash -= dt;
+
+      // 1. 바다 배경 렌더링
       oceanScrollY = (oceanScrollY + dt * 32) % 60;
       drawPacificOceanBackground(dt);
 
-      // 2. 자동 탄환 발사
+      // 2. 아군 탄환 발사
       fireCooldown -= dt;
       if (fireCooldown <= 0) {
         shoot1945Bullets();
         fireCooldown = plane.fireDelay;
       }
 
-      // 3. 적기 및 거대 전함 여유로운 스폰
+      // 3. 난이도별 적군 스폰
       enemySpawnTimer -= dt;
+      const spawnInterval = gameDifficulty === 'HELL' ? 0.75 : gameDifficulty === 'HARD' ? 0.95 : 1.25;
       if (enemySpawnTimer <= 0) {
         spawnEnemyFormation();
-        enemySpawnTimer = 1.4; // 1.4초마다 편대 생성
+        enemySpawnTimer = spawnInterval;
       }
 
       bossSpawnTimer += dt;
-      if (bossSpawnTimer >= 12) {
+      const bossInterval = gameDifficulty === 'HELL' ? 10 : 13;
+      if (bossSpawnTimer >= bossInterval) {
         bossSpawnTimer = 0;
         spawnBattleship();
       }
 
-      // 4. 적군 업데이트 & 렌더링 (전함 -> 일반기 순서로 그려 입체감 부여)
+      // 활성화된 거대 전함 추적 (보스 체력바 렌더링용)
+      let activeBoss = null;
+
+      // 4. 적군 업데이트 & 렌더링
       for (let i = enemies.length - 1; i >= 0; i--) {
         const en = enemies[i];
         en.x += (en.vx || 0) * dt;
         en.y += en.vy * dt;
 
+        // 적군 탄환 발사 AI
+        en.shootCooldown -= dt;
+        if (en.shootCooldown <= 0 && en.y > 20 && en.y < canvas.height - 120) {
+          shootEnemyBullet(en);
+          en.shootCooldown = Math.random() * 1.8 + (gameDifficulty === 'HELL' ? 0.8 : 1.4);
+        }
+
         if (en.type === 'battleship') {
+          activeBoss = en;
           drawBattleship(en);
         } else if (en.type === 'heli') {
           drawCombatHeli(en);
+          drawEnemyHealthBar(en);
+        } else if (en.type === 'bomber') {
+          drawHeavyBomber(en);
+          drawEnemyHealthBar(en);
         } else {
           drawFighterEnemy(en);
+          drawEnemyHealthBar(en);
         }
 
-        // 탄환 충돌 판정
-        const hitRadius = en.type === 'battleship' ? 48 : 22;
+        // 아군 탄환 vs 적 피격
+        const hitRadius = en.type === 'battleship' ? 52 : en.type === 'bomber' ? 32 : 22;
         for (let j = bullets.length - 1; j >= 0; j--) {
           const b = bullets[j];
           if (Math.hypot(b.x - en.x, b.y - en.y) < hitRadius) {
@@ -913,7 +935,7 @@
 
             if (en.hp <= 0) {
               spawnExplosion(en.x, en.y, en.type === 'battleship' ? 'huge' : 'large');
-              const reward = (en.type === 'battleship' ? 80 : 15) * plane.scoreMult;
+              const reward = (en.type === 'battleship' ? 100 : en.type === 'bomber' ? 30 : 15) * plane.scoreMult;
               enemies.splice(i, 1);
               addPlayerGold(reward);
               break;
@@ -921,12 +943,45 @@
           }
         }
 
-        if (en.y > canvas.height + 100 || en.x < -80 || en.x > canvas.width + 80) {
+        // 플레이어 기체와 적 충돌 (패널티 전혀 없음: 쉴드 방어만 발생)
+        if (Math.hypot(plane.x - en.x, plane.y - en.y) < hitRadius + 15) {
+          triggerPlayerShieldAbsorb(en.x, en.y);
+        }
+
+        if (en.y > canvas.height + 100 || en.x < -100 || en.x > canvas.width + 100) {
           enemies.splice(i, 1);
         }
       }
 
-      // 5. 플레이어 탄환 렌더링 (주황/노란 화염 직선탄 + 연두색 대각선 유도탄)
+      // 5. 적군 탄환 업데이트 (피격 시 패널티 없음! 쉴드 파동만 연출)
+      for (let i = enemyBullets.length - 1; i >= 0; i--) {
+        const eb = enemyBullets[i];
+        eb.x += eb.vx * dt;
+        eb.y += eb.vy * dt;
+
+        // 적 탄환 그리기 (붉은빛 원형 에너지탄)
+        ctx.fillStyle = "#f87171";
+        ctx.beginPath();
+        ctx.arc(eb.x, eb.y, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(eb.x, eb.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 플레이어 적중 시: 패널티 없이 탄환만 소멸 + 쉴드 흡수 연출!
+        if (Math.hypot(plane.x - eb.x, plane.y - eb.y) < 24) {
+          enemyBullets.splice(i, 1);
+          triggerPlayerShieldAbsorb(eb.x, eb.y);
+          continue;
+        }
+
+        if (eb.y > canvas.height + 20 || eb.x < -20 || eb.x > canvas.width + 20) {
+          enemyBullets.splice(i, 1);
+        }
+      }
+
+      // 6. 아군 탄환 렌더링
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx * dt;
@@ -938,7 +993,6 @@
           ctx.ellipse(b.x, b.y, 3.5, 7, 0, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          // 1945 특유의 불꽃 꼬리 탄환
           ctx.fillStyle = "#ef4444";
           ctx.fillRect(b.x - 2, b.y, 4, 12);
           ctx.fillStyle = "#fef08a";
@@ -948,19 +1002,27 @@
         if (b.y < -20) bullets.splice(i, 1);
       }
 
-      // 6. 플레이어 1945 주력기 & 좌우 호위기(Wingman) 편대 렌더링
+      // 7. 플레이어 기체 & 쉴드 렌더링
       draw1945PlayerFormation(plane.x, plane.y);
 
-      // 7. 폭발 화염 & 연기 파티클 렌더링
-      updateAndDrawExplosions(dt);
+      // 8. 거대 전함(보스) 전용 특수 상단 체력바
+      if (activeBoss) {
+        drawCinematicBossHealthBar(activeBoss);
+      }
 
-      // 8. 상공 반투명 구름 패럴랙스 렌더링
+      // 9. 폭발 파티클 & 구름
+      updateAndDrawExplosions(dt);
       drawParallaxClouds(dt);
 
       animFrameId = requestAnimationFrame(gameLoop);
     }
 
-    // 점수 획득 시 로컬 UI 즉시 갱신 + DB 동기화
+    // 피격 시 페널티 완전 제거: 쉴드 흡수 이펙트만 가동
+    function triggerPlayerShieldAbsorb(hitX, hitY) {
+      plane.shieldFlash = 0.25;
+      spawnExplosion(hitX, hitY, 'small');
+    }
+
     function addPlayerGold(amount) {
       myGold += amount;
       document.getElementById('hud-my-score').textContent = `${myGold.toLocaleString()} G`;
@@ -968,14 +1030,81 @@
     }
 
     /* ====================================================================
-       1945 태평양 해전 배경 & 유닛 그래픽 디테일 드로잉 함수들
+       일반 적 체력바 & 보스 특수 체력바 렌더링 함수
+       ==================================================================== */
+    // 1. 일반 적기 머리 위 실시간 체력바
+    function drawEnemyHealthBar(en) {
+      const w = en.type === 'bomber' ? 38 : en.type === 'heli' ? 26 : 22;
+      const h = 4;
+      const x = en.x - w / 2;
+      const y = en.y - (en.type === 'bomber' ? 28 : 22);
+      const pct = Math.max(0, en.hp / en.maxHp);
+
+      // 배경 바 (어두운 프레임)
+      ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+      ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+
+      // 체력 잔여량에 따른 색상 변화 (녹색 -> 노랑 -> 빨강)
+      ctx.fillStyle = pct > 0.5 ? "#22c55e" : pct > 0.25 ? "#f59e0b" : "#ef4444";
+      ctx.fillRect(x, y, w * pct, h);
+    }
+
+    // 2. 보스(거대 전함) 전용 특수 상단 체력바
+    function drawCinematicBossHealthBar(boss) {
+      const barW = Math.min(320, canvas.width * 0.76);
+      const barH = 12;
+      const barX = (canvas.width - barW) / 2;
+      const barY = 88;
+      const pct = Math.max(0, boss.hp / boss.maxHp);
+
+      ctx.save();
+      // 보스 바 외곽 금빛 프레임
+      ctx.fillStyle = "rgba(7, 17, 30, 0.9)";
+      ctx.fillRect(barX - 8, barY - 18, barW + 16, barH + 26);
+      ctx.strokeStyle = "#fbbf24";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(barX - 8, barY - 18, barW + 16, barH + 26);
+
+      // 보스 타이틀 및 남은 체력 %
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 10px sans-serif";
+      ctx.fillText("⚠️ BOSS: 태평양 거대 전함", barX, barY - 5);
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "right";
+      ctx.fillText(`${Math.round(pct * 100)}%`, barX + barW, barY - 5);
+
+      // 체력 게이지 배경
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(barX, barY, barW, barH);
+
+      // 화려한 그라디언트 체력 게이지
+      const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+      grad.addColorStop(0, "#ef4444");
+      grad.addColorStop(0.5, "#f59e0b");
+      grad.addColorStop(1, "#fbbf24");
+      ctx.fillStyle = grad;
+      ctx.fillRect(barX, barY, barW * pct, barH);
+
+      // 분할 눈금선 (아케이드 메카닉 느낌)
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.lineWidth = 1.5;
+      for (let s = 1; s <= 9; s++) {
+        const sx = barX + (barW * s) / 10;
+        ctx.beginPath();
+        ctx.moveTo(sx, barY);
+        ctx.lineTo(sx, barY + barH);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    /* ====================================================================
+       1945 태평양 해전 배경 및 유닛 그래픽 드로잉
        ==================================================================== */
     function drawPacificOceanBackground(dt) {
-      // 깊은 태평양 바다색
       ctx.fillStyle = "#0b4f8a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 잔잔한 물결 하이라이트 패턴
       ctx.strokeStyle = "rgba(125, 211, 252, 0.16)";
       ctx.lineWidth = 2;
       for (let y = oceanScrollY - 60; y < canvas.height; y += 60) {
@@ -987,37 +1116,30 @@
         }
       }
 
-      // 좌우 해안가 섬 지형 스크롤 (모래사장 + 암초 + 야자수 + 부두)
       islands.forEach(isl => {
         isl.y += dt * 32;
-        if (isl.y > canvas.height + 120) {
-          isl.y = -isl.h - 60;
-        }
+        if (isl.y > canvas.height + 120) isl.y = -isl.h - 60;
 
         const isLeft = isl.side === 'left';
         const baseX = isLeft ? 0 : canvas.width;
         const dir = isLeft ? 1 : -1;
 
         ctx.save();
-        // 얕은 에메랄드 해안선 물빛
         ctx.fillStyle = "rgba(56, 189, 248, 0.35)";
         ctx.beginPath();
         ctx.ellipse(baseX, isl.y + isl.h / 2, isl.w + 18, isl.h / 2 + 15, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // 모래사장 해변
         ctx.fillStyle = "#d6b88c";
         ctx.beginPath();
         ctx.ellipse(baseX, isl.y + isl.h / 2, isl.w, isl.h / 2, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // 암초 및 수풀 언덕
         ctx.fillStyle = "#4d3826";
         ctx.beginPath();
         ctx.ellipse(baseX, isl.y + isl.h / 2, isl.w * 0.72, isl.h * 0.38, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // 야자수 잎사귀 디테일
         const treeX = baseX + dir * (isl.w * 0.42);
         const treeY = isl.y + isl.h * 0.4;
         ctx.strokeStyle = "#15803d";
@@ -1030,7 +1152,6 @@
           ctx.stroke();
         }
 
-        // 부두 파이프 구조물 (좌측 섬 하단)
         if (isl.hasDock) {
           ctx.fillStyle = "#334155";
           ctx.fillRect(0, isl.y + isl.h - 25, isl.w + 25, 8);
@@ -1061,19 +1182,25 @@
       });
     }
 
-    // 플레이어 P-38 쌍발 프로펠러 전투기 + 좌우 호위기(Wingman)
+    // 플레이어 P-38 전투기 및 호위기
     function draw1945PlayerFormation(x, y) {
-      // 바다 위 기체 그림자
       drawSingleVintagePlane(x + 14, y + 18, 1.0, true);
-      // 본체
       drawSingleVintagePlane(x, y, 1.0, false);
 
-      // 호위기 (Wingmen)
-      if (plane.wingmen >= 1) {
-        drawSingleVintagePlane(x - 42, y + 12, 0.62, false);
-      }
-      if (plane.wingmen >= 2) {
-        drawSingleVintagePlane(x + 42, y + 12, 0.62, false);
+      if (plane.wingmen >= 1) drawSingleVintagePlane(x - 42, y + 12, 0.62, false);
+      if (plane.wingmen >= 2) drawSingleVintagePlane(x + 42, y + 12, 0.62, false);
+
+      // 피격 시 쉴드 방어 파동 (푸른빛 원형 쉴드 돔)
+      if (plane.shieldFlash > 0) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.85)";
+        ctx.lineWidth = 3;
+        ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
+        ctx.beginPath();
+        ctx.arc(x, y, 36, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
       }
     }
 
@@ -1082,11 +1209,6 @@
       ctx.translate(x, y);
       ctx.scale(scale, scale);
 
-      if (isShadow) {
-        ctx.fillStyle = "rgba(0, 15, 35, 0.35)";
-      }
-
-      // 주 날개 (갈색/황토색 1945 전투기)
       ctx.fillStyle = isShadow ? "rgba(0,15,35,0.35)" : "#c26d2d";
       ctx.strokeStyle = "#271509";
       ctx.lineWidth = 1.5;
@@ -1095,36 +1217,30 @@
       ctx.fill();
       if (!isShadow) ctx.stroke();
 
-      // 쌍발 붐(Twin-boom) 꼬리 동체
       ctx.fillStyle = isShadow ? "rgba(0,15,35,0.35)" : "#9a4e18";
       ctx.fillRect(-13, -16, 5, 36);
       ctx.fillRect(8, -16, 5, 36);
 
-      // 수평 꼬리날개
       ctx.fillStyle = isShadow ? "rgba(0,15,35,0.35)" : "#d97706";
       ctx.fillRect(-16, 16, 32, 5);
 
-      // 중앙 조종석 동체
       ctx.fillStyle = isShadow ? "rgba(0,15,35,0.35)" : "#ea580c";
       ctx.beginPath();
       ctx.ellipse(0, -2, 6, 16, 0, 0, Math.PI * 2);
       ctx.fill();
 
       if (!isShadow) {
-        // 유리 캐노피
         ctx.fillStyle = "#38bdf8";
         ctx.beginPath();
         ctx.ellipse(0, -2, 3.5, 7, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // 날개 위 별 마크
         ctx.fillStyle = "#fef08a";
         ctx.beginPath();
         ctx.arc(-22, 0, 3, 0, Math.PI * 2);
         ctx.arc(22, 0, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // 회전 프로펠러 잔상
         ctx.strokeStyle = "rgba(255,255,255,0.7)";
         ctx.lineWidth = 2;
         const pLen = Math.sin(propAngle) * 7;
@@ -1136,116 +1252,139 @@
       ctx.restore();
     }
 
-    // 적기 스폰 (매우 여유로운 하강 속도: 초당 55~85 픽셀)
+    // 난이도별 대규모 편대 스폰
     function spawnEnemyFormation() {
+      const spdMult = gameDifficulty === 'HELL' ? 1.4 : gameDifficulty === 'HARD' ? 1.2 : 1.0;
+      const hpMult = gameDifficulty === 'HELL' ? 1.6 : gameDifficulty === 'HARD' ? 1.3 : 1.0;
       const roll = Math.random();
-      if (roll < 0.4) {
-        // 좌측 녹색 프로펠러 편대 (2~3기)
-        for (let i = 0; i < 2; i++) {
+
+      if (roll < 0.35) {
+        // V자 4기 편대
+        const startX = Math.random() * (canvas.width - 160) + 80;
+        for (let i = 0; i < 4; i++) {
+          const offsetX = (i % 2 === 0 ? 1 : -1) * (Math.floor(i / 2) + 1) * 28;
           enemies.push({
             type: 'fighter', color: 'green',
-            x: 50 + i * 38, y: -30 - i * 30,
-            vx: 18, vy: 65, hp: 2
+            x: startX + offsetX, y: -30 - Math.floor(i / 2) * 35,
+            vx: 0, vy: 95 * spdMult,
+            hp: Math.round(3 * hpMult), maxHp: Math.round(3 * hpMult),
+            shootCooldown: Math.random() * 2 + 1
           });
         }
-      } else if (roll < 0.8) {
-        // 우측 노란색 프로펠러 편대 (2~3기)
-        for (let i = 0; i < 2; i++) {
+      } else if (roll < 0.65) {
+        // 사선 3기 돌격 편대
+        const isLeft = Math.random() < 0.5;
+        for (let i = 0; i < 3; i++) {
           enemies.push({
             type: 'fighter', color: 'yellow',
-            x: canvas.width - 50 - i * 38, y: -30 - i * 30,
-            vx: -18, vy: 65, hp: 2
+            x: isLeft ? 40 + i * 35 : canvas.width - 40 - i * 35,
+            y: -30 - i * 30,
+            vx: isLeft ? 25 * spdMult : -25 * spdMult,
+            vy: 110 * spdMult,
+            hp: Math.round(4 * hpMult), maxHp: Math.round(4 * hpMult),
+            shootCooldown: Math.random() * 2 + 1
+          });
+        }
+      } else if (roll < 0.85) {
+        // 회전익 전투 헬기 2기 동시 출현
+        for (let i = 0; i < 2; i++) {
+          enemies.push({
+            type: 'heli',
+            x: 70 + i * (canvas.width - 140), y: -40,
+            vx: (i === 0 ? 1 : -1) * 15,
+            vy: 65 * spdMult,
+            hp: Math.round(8 * hpMult), maxHp: Math.round(8 * hpMult),
+            shootCooldown: 0.8
           });
         }
       } else {
-        // 회색 회전익 전투 헬기 (천천히 직진 하강)
+        // 신규: 4발 중형 폭격기 (Heavy Bomber)
         enemies.push({
-          type: 'heli',
-          x: Math.random() * (canvas.width - 120) + 60, y: -40,
-          vx: 0, vy: 48, hp: 5
+          type: 'bomber',
+          x: Math.random() * (canvas.width - 160) + 80, y: -60,
+          vx: 0, vy: 48 * spdMult,
+          hp: Math.round(14 * hpMult), maxHp: Math.round(14 * hpMult),
+          shootCooldown: 0.6
         });
       }
     }
 
-    // 중앙 거대 전함(항공모함) 스폰
     function spawnBattleship() {
-      // 이미 전함이 있으면 중복 스폰 안 함
       if (enemies.some(e => e.type === 'battleship')) return;
+      const hpBase = gameDifficulty === 'HELL' ? 90 : gameDifficulty === 'HARD' ? 75 : 55;
       enemies.push({
         type: 'battleship',
-        x: canvas.width / 2,
-        y: -110,
-        vx: 0,
-        vy: 24, // 아주 묵직하고 느리게 내려옴
-        hp: 22,
-        maxHp: 22
+        x: canvas.width / 2, y: -110,
+        vx: 0, vy: 26,
+        hp: hpBase, maxHp: hpBase,
+        shootCooldown: 1.0
       });
     }
 
-    // 녹색/노란색 적 전투기 + 바다 그림자 렌더링
-    function drawFighterEnemy(en) {
-      // 그림자
-      ctx.save();
-      ctx.translate(en.x + 12, en.y + 16);
-      ctx.fillStyle = "rgba(0, 15, 35, 0.35)";
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 18, 5, 0, 0, Math.PI * 2);
-      ctx.ellipse(0, 0, 4, 14, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+    // 적기 탄환 발사 AI
+    function shootEnemyBullet(en) {
+      if (en.type === 'battleship') {
+        // 전함: 3갈래 부채꼴 사격
+        for (let a = -1; a <= 1; a++) {
+          enemyBullets.push({ x: en.x + a * 20, y: en.y + 45, vx: a * 45, vy: 140 });
+        }
+      } else if (en.type === 'bomber') {
+        // 폭격기: 2열 직선 사격
+        enemyBullets.push({ x: en.x - 14, y: en.y + 20, vx: 0, vy: 160 });
+        enemyBullets.push({ x: en.x + 14, y: en.y + 20, vx: 0, vy: 160 });
+      } else {
+        // 일반기/헬기: 플레이어 방향 단발 조준탄
+        const angle = Math.atan2(plane.y - en.y, plane.x - en.x);
+        enemyBullets.push({
+          x: en.x, y: en.y + 16,
+          vx: Math.cos(angle) * 150,
+          vy: Math.sin(angle) * 150
+        });
+      }
+    }
 
-      // 본체
+    // 적 유닛 드로잉
+    function drawFighterEnemy(en) {
       ctx.save();
       ctx.translate(en.x, en.y);
       const mainColor = en.color === 'green' ? "#4d7c0f" : "#eab308";
       const subColor = en.color === 'green' ? "#65a30d" : "#facc15";
 
-      // 날개
       ctx.fillStyle = mainColor;
       ctx.strokeStyle = "#1e293b";
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.roundRect(-20, -5, 40, 10, 3);
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
-      // 동체
       ctx.fillStyle = subColor;
       ctx.beginPath();
       ctx.ellipse(0, 0, 5, 15, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
-      // 붉은 노즈콘 & 프로펠러
       ctx.fillStyle = "#dc2626";
       ctx.beginPath();
       ctx.arc(0, 14, 3.5, 0, Math.PI * 2);
       ctx.fill();
-
       ctx.restore();
     }
 
-    // 회색 전투 헬기 (원형 회전 로터 포함)
     function drawCombatHeli(en) {
       ctx.save();
       ctx.translate(en.x, en.y);
 
-      // 기체 동체
       ctx.fillStyle = "#64748b";
       ctx.strokeStyle = "#1e293b";
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.ellipse(0, 0, 11, 22, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
-      // 콕핏 유리
       ctx.fillStyle = "#0f172a";
       ctx.beginPath();
       ctx.arc(0, 10, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      // 반투명 회전 로터 원판 (사진 우측 헬기 디테일 반영)
       ctx.fillStyle = "rgba(226, 232, 240, 0.32)";
       ctx.beginPath();
       ctx.arc(0, 0, 24, 0, Math.PI * 2);
@@ -1257,16 +1396,37 @@
       ctx.moveTo(Math.cos(propAngle) * 23, Math.sin(propAngle) * 23);
       ctx.lineTo(-Math.cos(propAngle) * 23, -Math.sin(propAngle) * 23);
       ctx.stroke();
-
       ctx.restore();
     }
 
-    // 중앙 거대 전함 (항공모함 갑판 + 다연장 포탑 + 경고 줄무늬)
+    function drawHeavyBomber(en) {
+      ctx.save();
+      ctx.translate(en.x, en.y);
+
+      ctx.fillStyle = "#334155";
+      ctx.strokeStyle = "#0f172a";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(-38, -8, 76, 16, 4);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = "#475569";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 10, 26, 0, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath();
+      ctx.arc(-24, 6, 4, 0, Math.PI * 2);
+      ctx.arc(24, 6, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
     function drawBattleship(en) {
       ctx.save();
       ctx.translate(en.x, en.y);
 
-      // 함선 외곽 선체
       ctx.fillStyle = "#475569";
       ctx.strokeStyle = "#cbd5e1";
       ctx.lineWidth = 2;
@@ -1278,24 +1438,19 @@
       ctx.lineTo(-28, 85);
       ctx.lineTo(-46, 55);
       ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
+      ctx.fill(); ctx.stroke();
 
-      // 갑판 활주로 라인
       ctx.strokeStyle = "rgba(255,255,255,0.4)";
       ctx.setLineDash([8, 6]);
       ctx.beginPath();
       ctx.moveTo(-22, -80); ctx.lineTo(-22, 45);
       ctx.moveTo(22, -80); ctx.lineTo(22, 45);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.stroke(); ctx.setLineDash([]);
 
-      // 노란/검은 위험 경고 스트라이프
       ctx.fillStyle = "#f59e0b";
       ctx.fillRect(-36, 48, 22, 7);
       ctx.fillRect(14, 48, 22, 7);
 
-      // 중앙 녹색 보조 대공포열
       ctx.fillStyle = "#4d7c0f";
       for (let py = -35; py <= 5; py += 18) {
         ctx.beginPath();
@@ -1304,48 +1459,30 @@
         ctx.fill();
       }
 
-      // 주포탑 (하단 회전 포탑)
       ctx.fillStyle = "#334155";
       ctx.beginPath();
       ctx.arc(0, 32, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      // 포신 2열
+      ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#1e293b";
       ctx.fillRect(-5, 38, 3, 18);
       ctx.fillRect(2, 38, 3, 18);
 
-      // 체력 게이지 바
-      const hpPct = Math.max(0, en.hp / en.maxHp);
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.fillRect(-35, -102, 70, 7);
-      ctx.fillStyle = "#ef4444";
-      ctx.fillRect(-35, -102, 70 * hpPct, 7);
-
       ctx.restore();
     }
 
-    // 플레이어 탄막 발사 (1945 스타일 직선 밀집 화염탄 + 호위기 사격)
     function shoot1945Bullets() {
       const yTop = plane.y - 22;
       const spd = -plane.bulletSpeed;
-
-      // 본체 직선 병렬 화염탄 (1~5열)
       const count = plane.shotCount;
       const spacing = 8;
       const startX = plane.x - ((count - 1) * spacing) / 2;
       for (let i = 0; i < count; i++) {
         bullets.push({
-          x: startX + i * spacing,
-          y: yTop,
-          vx: 0,
-          vy: spd,
-          dmg: plane.damage,
-          style: 'flame'
+          x: startX + i * spacing, y: yTop,
+          vx: 0, vy: spd, dmg: plane.damage, style: 'flame'
         });
       }
 
-      // 호위기 사격 (연두색 대각선/직선 지원 사격)
       if (plane.wingmen >= 1) {
         bullets.push({ x: plane.x - 42, y: plane.y - 5, vx: -25, vy: spd * 0.95, dmg: 1, style: 'green' });
       }
@@ -1354,7 +1491,6 @@
       }
     }
 
-    // 화염 폭발 파티클 시스템
     function spawnExplosion(x, y, sizeType) {
       const count = sizeType === 'huge' ? 18 : sizeType === 'large' ? 8 : 2;
       for (let i = 0; i < count; i++) {
@@ -1378,12 +1514,10 @@
         }
         ctx.save();
         ctx.globalAlpha = Math.max(0, ex.alpha);
-        // 외곽 검은 연기 & 붉은 화염
         ctx.fillStyle = "#dc2626";
         ctx.beginPath();
         ctx.arc(ex.x, ex.y, ex.r, 0, Math.PI * 2);
         ctx.fill();
-        // 중심 밝은 주황/노란 불꽃
         ctx.fillStyle = "#fef08a";
         ctx.beginPath();
         ctx.arc(ex.x, ex.y, ex.r * 0.55, 0, Math.PI * 2);
@@ -1393,7 +1527,7 @@
     }
 
     /* ====================================================================
-       퀴즈 출제 & 오답 시 10초 대기 페널티
+       퀴즈 출제 & 오답 페널티
        ==================================================================== */
     let quizLimitTimer = null;
     let currentQuizItem = null;
@@ -1468,7 +1602,7 @@
     function triggerWrongPenalty() {
       const penScreen = document.getElementById('penalty-screen');
       penScreen.style.display = 'flex';
-      let count = quizLimitSec; // 문제 할당 시간(기본 10초) 동안 대기
+      let count = quizLimitSec;
       document.getElementById('penalty-count').textContent = count;
 
       const pId = setInterval(() => {
@@ -1482,7 +1616,6 @@
       }, 1000);
     }
 
-    // 상자 선택: 비행기 능력치 강화 + 아케이드 역전 아이템
     function pickRewardChest(idx) {
       document.getElementById('chest-overlay').style.display = 'none';
       const roll = Math.random();
@@ -1563,7 +1696,6 @@
       animFrameId = requestAnimationFrame(gameLoop);
     }
 
-    // 게임 종료 시 전체 순위 및 오답 복습
     function showFinalLeaderboard() {
       isShootingActive = false;
       if (animFrameId) cancelAnimationFrame(animFrameId);
