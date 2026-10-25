@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>생명과학 퀴즈 타이쿤 (Gimkit Style)</title>
+  <title>골드 퀘스트 (Blooket Style)</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
+      --bg: #1e1b4b;
+      --panel: #2e1065;
+      --card-bg: #3b0764;
       --gold: #fbbf24;
+      --gold-dark: #d97706;
+      --accent: #a855f7;
+      --accent-glow: rgba(168, 85, 247, 0.4);
       --success: #22c55e;
       --danger: #ef4444;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --text: #ffffff;
+      --text-muted: #cbd5e1;
     }
 
     * {
@@ -23,131 +24,157 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      user-select: none;
     }
 
     body {
-      background-color: var(--bg);
+      background: radial-gradient(circle at center, #312e81, #0f172a);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 16px;
-      position: relative;
       overflow-x: hidden;
     }
 
-    /* Top Control Bar */
+    /* Top Nav */
     .top-bar {
       width: 100%;
-      max-width: 800px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-admin {
-      background: #334155;
-      color: var(--text);
-      border: 1px solid #475569;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-
-    .btn-admin:hover {
-      background: #475569;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* HUD (경제 대시보드) */
-    .hud {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px 20px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      text-align: center;
-    }
-
-    .hud-stat .label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
-    }
-
-    .hud-stat .value {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .hud-stat.money .value {
-      color: var(--gold);
-      text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-    }
-
-    .hud-stat.streak .value {
-      color: #f43f5e;
-    }
-
-    /* 퀴즈 박스 */
-    .quiz-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      position: relative;
-    }
-
-    .question-header {
+      max-width: 850px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
     }
 
-    .category-badge {
-      font-size: 0.75rem;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent);
-      padding: 4px 10px;
-      border-radius: 20px;
+    .title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-admin {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.2s;
+    }
+
+    .btn-admin:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .main-layout {
+      width: 100%;
+      max-width: 850px;
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 16px;
+    }
+
+    /* 왼쪽 게임 플레이 구역 */
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 내 골드 전광판 */
+    .gold-hud {
+      background: linear-gradient(135deg, #4c1d95, #2e1065);
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    .hud-player {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-player span:first-child {
+      font-size: 0.85rem;
+      color: var(--text-muted);
       font-weight: 600;
     }
 
-    .question-text {
+    .hud-player span:last-child {
       font-size: 1.2rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    .hud-gold-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hud-gold-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 8px var(--gold));
+    }
+
+    .hud-gold-value {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+    }
+
+    /* 화면 전환용 컨테이너 */
+    .screen-container {
+      background: rgba(23, 15, 48, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      min-height: 380px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 1. 퀴즈 뷰 */
+    .quiz-view {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .q-badge {
+      align-self: flex-start;
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--accent);
+      color: #e9d5ff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .q-text {
+      font-size: 1.25rem;
       font-weight: 700;
       line-height: 1.5;
-      margin-bottom: 24px;
-      min-height: 58px;
+      min-height: 60px;
     }
 
     .options-grid {
@@ -156,146 +183,214 @@
       gap: 12px;
     }
 
-    .option-btn {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: var(--text);
-      padding: 16px;
+    .btn-opt {
+      background: #1e1b4b;
+      border: 2px solid #4338ca;
+      color: white;
+      padding: 18px;
       border-radius: 12px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       text-align: left;
       transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
 
-    .option-btn:hover:not(:disabled) {
-      background: #1e293b;
+    .btn-opt:hover:not(:disabled) {
+      background: #312e81;
       border-color: var(--accent);
       transform: translateY(-2px);
     }
 
-    .option-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .option-btn.correct {
-      background: rgba(34, 197, 94, 0.2) !important;
+    .btn-opt.correct {
+      background: rgba(34, 197, 94, 0.3) !important;
       border-color: var(--success) !important;
-      color: var(--success) !important;
     }
 
-    .option-btn.wrong {
-      background: rgba(239, 68, 68, 0.2) !important;
+    .btn-opt.wrong {
+      background: rgba(239, 68, 68, 0.3) !important;
       border-color: var(--danger) !important;
-      color: var(--danger) !important;
     }
 
-    /* 타이쿤 상점 영역 */
-    .shop-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .shop-header {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
+    /* 2. 상자 선택 뷰 (Chest Pick) */
+    .chest-view {
+      display: none;
+      flex-direction: column;
       align-items: center;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
     }
 
-    .shop-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .chest-instruction {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
     }
 
-    .shop-item {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 14px;
+    .chests-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .chest-box {
+      width: 140px;
+      height: 150px;
+      background: linear-gradient(145deg, #6b21a8, #3b0764);
+      border: 3px solid var(--gold);
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .shop-item-info h4 {
-      font-size: 0.95rem;
-      margin-bottom: 4px;
+    .chest-box:hover {
+      transform: translateY(-8px) scale(1.05);
+      border-color: #fff;
+      box-shadow: 0 12px 25px rgba(251, 191, 36, 0.4);
     }
 
-    .shop-item-info p {
-      font-size: 0.8rem;
+    .chest-icon {
+      font-size: 3.5rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    .chest-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 6px;
+      color: var(--gold);
+    }
+
+    /* 3. 보상 발표 뷰 (Chest Result) */
+    .result-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align: center;
+    }
+
+    .result-icon {
+      font-size: 4.5rem;
+      animation: bounce 0.6s infinite alternate ease-in-out;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+    }
+
+    .result-desc {
+      font-size: 1rem;
       color: var(--text-muted);
     }
 
-    .shop-item-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-    }
-
-    .shop-level {
-      font-size: 0.8rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .btn-buy {
-      background: #2563eb;
-      color: white;
+    .btn-continue {
+      margin-top: 10px;
+      background: linear-gradient(135deg, #eab308, #ca8a04);
+      color: #0f172a;
       border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 700;
+      padding: 12px 36px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 900;
       cursor: pointer;
+      box-shadow: 0 6px 20px rgba(234, 179, 8, 0.4);
       transition: all 0.2s;
     }
 
-    .btn-buy:hover:not(:disabled) {
-      background: #1d4ed8;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    .btn-continue:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #facc15, #eab308);
     }
 
-    .btn-buy:disabled {
-      background: #334155;
-      color: #64748b;
-      cursor: not-allowed;
+    /* 오른쪽 리더보드 */
+    .leaderboard-card {
+      background: rgba(23, 15, 48, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* 플로팅 애니메이션 텍스트 (+$$$) */
-    .floating-text {
-      position: absolute;
+    .lb-header {
+      font-size: 1rem;
       font-weight: 800;
-      font-size: 1.5rem;
-      animation: floatUp 0.8s ease-out forwards;
-      pointer-events: none;
-      z-index: 50;
+      color: var(--gold);
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
     }
 
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+    .lb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    /* 교사 관리자 모달 창 */
+    .lb-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .lb-item.me {
+      background: linear-gradient(90deg, rgba(168, 85, 247, 0.3), rgba(59, 130, 246, 0.3));
+      border: 1px solid var(--accent);
+      font-weight: 800;
+    }
+
+    .lb-rank {
+      width: 24px;
+      font-weight: 900;
+      color: var(--text-muted);
+    }
+
+    .lb-item:first-child .lb-rank { color: #f59e0b; }
+    .lb-item:nth-child(2) .lb-rank { color: #cbd5e1; }
+    .lb-item:nth-child(3) .lb-rank { color: #b45309; }
+
+    .lb-name {
+      flex: 1;
+      text-align: left;
+      padding-left: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lb-score {
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    /* 교사용 모달 */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -308,37 +403,23 @@
     }
 
     .modal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: #1e1b4b;
+      border: 1px solid #4338ca;
       border-radius: 16px;
       width: 100%;
-      max-width: 650px;
+      max-width: 600px;
       max-height: 85vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .modal-header {
       padding: 16px 20px;
-      border-bottom: 1px solid var(--card-border);
+      border-bottom: 1px solid #4338ca;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .modal-header h3 {
-      font-size: 1.15rem;
-      color: var(--accent);
-    }
-
-    .btn-close {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.4rem;
-      cursor: pointer;
     }
 
     .modal-body {
@@ -346,33 +427,28 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .form-group label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
       font-weight: 600;
-      color: #cbd5e1;
     }
 
     .form-input {
       background: #0f172a;
       border: 1px solid #334155;
-      color: var(--text);
-      padding: 10px 12px;
+      color: white;
+      padding: 10px;
       border-radius: 8px;
       font-size: 0.9rem;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--accent);
     }
 
     .btn-submit {
@@ -385,211 +461,152 @@
       cursor: pointer;
     }
 
-    .admin-actions {
-      display: flex;
-      gap: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--card-border);
-    }
-
     .btn-sub {
-      flex: 1;
       background: #334155;
       color: white;
       border: none;
       padding: 10px;
       border-radius: 8px;
       font-size: 0.85rem;
-      font-weight: 600;
       cursor: pointer;
     }
 
-    .btn-sub:hover {
-      background: #475569;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .question-list-item {
-      background: #0f172a;
-      border: 1px solid #334155;
-      padding: 10px 14px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.7); }
+      70% { transform: scale(1.08); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
-    .btn-delete {
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 1.1rem;
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
     }
 
-    /* 목표 달성 팝업 */
-    .goal-banner {
-      background: linear-gradient(90deg, #1e3a8a, #0284c7);
-      padding: 12px 16px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    @media (max-width: 600px) {
-      .hud { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 720px) {
+      .main-layout { grid-template-columns: 1fr; }
       .options-grid { grid-template-columns: 1fr; }
-      .shop-grid { grid-template-columns: 1fr; }
+      .chest-box { width: 95px; height: 120px; }
+      .chest-icon { font-size: 2.5rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Control Bar -->
+  <!-- Top Bar -->
   <div class="top-bar">
-    <div class="title">🔬 생명과학 타이쿤</div>
-    <button class="btn-admin" onclick="openAdminModal()">⚙️ 문제 관리자 모드</button>
+    <div class="title">🏆 골드 퀘스트 (Gold Quest)</div>
+    <button class="btn-admin" onclick="openAdminModal()">⚙️ 문제 관리자</button>
   </div>
 
-  <div class="container">
-    <!-- 목표 진행률 -->
-    <div class="goal-banner">
-      <span>🎯 목표: 연구비 $50,000 달성</span>
-      <span id="goal-progress">0%</span>
+  <div class="main-layout">
+    <!-- 왼쪽 게임 구역 -->
+    <div class="game-area">
+      <!-- 골드 전광판 -->
+      <div class="gold-hud">
+        <div class="hud-player">
+          <span>PLAYER</span>
+          <span>나 (탐험가)</span>
+        </div>
+        <div class="hud-gold-display">
+          <div class="hud-gold-icon">💰</div>
+          <div class="hud-gold-value" id="player-gold">0</div>
+        </div>
+      </div>
+
+      <!-- 메인 스크린 (퀴즈 / 상자 / 결과 3단계 교체) -->
+      <div class="screen-container">
+        <!-- 1. 퀴즈 화면 -->
+        <div class="quiz-view" id="view-quiz">
+          <div class="q-badge" id="q-category">생명과학 미션</div>
+          <div class="q-text" id="q-text">문제를 불러오는 중...</div>
+          <div class="options-grid" id="options-container"></div>
+        </div>
+
+        <!-- 2. 상자 선택 화면 -->
+        <div class="chest-view" id="view-chest">
+          <div class="chest-instruction">🎁 행운의 상자 하나를 선택하세요!</div>
+          <div class="chests-row">
+            <div class="chest-box" onclick="pickChest(0)">
+              <div class="chest-icon">📦</div>
+              <div class="chest-label">상자 #1</div>
+            </div>
+            <div class="chest-box" onclick="pickChest(1)">
+              <div class="chest-icon">📦</div>
+              <div class="chest-label">상자 #2</div>
+            </div>
+            <div class="chest-box" onclick="pickChest(2)">
+              <div class="chest-icon">📦</div>
+              <div class="chest-label">상자 #3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 상자 개봉 결과 화면 -->
+        <div class="result-view" id="view-result">
+          <div class="result-icon" id="res-icon">✨</div>
+          <div class="result-title" id="res-title">+50 Gold!</div>
+          <div class="result-desc" id="res-desc">상자에서 금화를 발견했습니다!</div>
+          <button class="btn-continue" onclick="nextQuestion()">계속하기 ➔</button>
+        </div>
+      </div>
     </div>
 
-    <!-- HUD 경제 대시보드 -->
-    <div class="hud">
-      <div class="hud-stat money">
-        <div class="label">보유 연구비</div>
-        <div class="value" id="hud-money">$0</div>
+    <!-- 오른쪽 실시간 랭킹 (라이벌 봇들과 경쟁) -->
+    <div class="leaderboard-card">
+      <div class="lb-header">
+        <span>🏆 순위표 (Leaderboard)</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">실시간</span>
       </div>
-      <div class="hud-stat">
-        <div class="label">기본 정답 보상</div>
-        <div class="value" id="hud-reward">+$10</div>
-      </div>
-      <div class="hud-stat streak">
-        <div class="label">연속 정답(Streak)</div>
-        <div class="value" id="hud-streak">0회</div>
-      </div>
-      <div class="hud-stat">
-        <div class="label">초당 자동 연구비</div>
-        <div class="value" id="hud-passive">+$0/s</div>
-      </div>
-    </div>
-
-    <!-- 퀴즈 영역 -->
-    <div class="quiz-card" id="quiz-card">
-      <div class="question-header">
-        <span class="category-badge" id="q-category">생명과학 I</span>
-        <span style="font-size: 0.8rem; color: var(--text-muted);" id="q-counter">문제 1</span>
-      </div>
-      <div class="question-text" id="q-text">문제를 불러오는 중입니다...</div>
-      <div class="options-grid" id="options-container"></div>
-    </div>
-
-    <!-- 타이쿤 상점 영역 -->
-    <div class="shop-card">
-      <div class="shop-header">
-        <span>🛒 연구소 업그레이드 상점</span>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">수익을 투자해 가속하세요!</span>
-      </div>
-      <div class="shop-grid">
-        <!-- 1. 정답 보상 증가 -->
-        <div class="shop-item">
-          <div class="shop-item-info">
-            <h4>기본 연구비 단가</h4>
-            <p>문제를 맞힐 때마다 지급되는 기본 연구비가 증가합니다.</p>
-          </div>
-          <div class="shop-item-footer">
-            <span class="shop-level" id="lvl-reward">Lv. 1</span>
-            <button class="btn-buy" id="btn-buy-reward" onclick="buyReward()">$50 구매</button>
-          </div>
-        </div>
-
-        <!-- 2. 스트릭 배수 강화 -->
-        <div class="shop-item">
-          <div class="shop-item-info">
-            <h4>연속 집중 보너스</h4>
-            <p>연속으로 정답을 맞힐 때 추가로 붙는 보너스 배율이 폭증합니다.</p>
-          </div>
-          <div class="shop-item-footer">
-            <span class="shop-level" id="lvl-streak">Lv. 1</span>
-            <button class="btn-buy" id="btn-buy-streak" onclick="buyStreak()">$120 구매</button>
-          </div>
-        </div>
-
-        <!-- 3. 오답 보험 -->
-        <div class="shop-item">
-          <div class="shop-item-info">
-            <h4>연구 손실 보험</h4>
-            <p>틀렸을 때 차감되는 연구비 손실액을 줄여줍니다.</p>
-          </div>
-          <div class="shop-item-footer">
-            <span class="shop-level" id="lvl-insur">Lv. 0 (50% 감면)</span>
-            <button class="btn-buy" id="btn-buy-insur" onclick="buyInsur()">$200 구매</button>
-          </div>
-        </div>
-
-        <!-- 4. 자동 연구원 고용 -->
-        <div class="shop-item">
-          <div class="shop-item-info">
-            <h4>학부 연구생 고용</h4>
-            <p>가만히 있어도 1초마다 연구비가 자동으로 들어옵니다.</p>
-          </div>
-          <div class="shop-item-footer">
-            <span class="shop-level" id="lvl-passive">Lv. 0 (+$0/s)</span>
-            <button class="btn-buy" id="btn-buy-passive" onclick="buyPassive()">$300 구매</button>
-          </div>
-        </div>
-      </div>
+      <div class="lb-list" id="lb-list"></div>
     </div>
   </div>
 
-  <!-- 교사용 문제 관리자 모달 -->
+  <!-- 교사용 문제 관리 모달 -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>⚙️ 교사 문제 관리 센터</h3>
-        <button class="btn-close" onclick="closeAdminModal()">&times;</button>
+        <h3 style="color: var(--gold);">⚙️ 문제 관리 센터</h3>
+        <button onclick="closeAdminModal()" style="background:transparent; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="add-q-form" onsubmit="handleAddNewQuestion(event)">
+        <form onsubmit="handleAddNewQuestion(event)" style="display:flex; flex-direction:column; gap:10px;">
           <div class="form-group">
             <label>문제 발문</label>
-            <input type="text" class="form-input" id="input-q-text" placeholder="예: 세포 호흡을 통해 ATP를 생산하는 소기관은?" required />
+            <input type="text" class="form-input" id="in-q" placeholder="예: 광합성이 일어나는 세포 소기관은?" required />
           </div>
           <div class="form-group">
-            <label>정답 (1번 보기로 지정되며, 게임 중엔 자동 셔플됩니다)</label>
-            <input type="text" class="form-input" id="input-correct" placeholder="예: 미토콘드리아" required />
+            <label>정답 (자동 셔플됩니다)</label>
+            <input type="text" class="form-input" id="in-ans" placeholder="예: 엽록체" required />
           </div>
           <div class="form-group">
             <label>오답 1</label>
-            <input type="text" class="form-input" id="input-wrong-1" placeholder="예: 소포체" required />
+            <input type="text" class="form-input" id="in-w1" placeholder="예: 미토콘드리아" required />
           </div>
           <div class="form-group">
             <label>오답 2</label>
-            <input type="text" class="form-input" id="input-wrong-2" placeholder="예: 골지체" required />
+            <input type="text" class="form-input" id="in-w2" placeholder="예: 리보솜" required />
           </div>
           <div class="form-group">
             <label>오답 3</label>
-            <input type="text" class="form-input" id="input-wrong-3" placeholder="예: 리소좀" required />
+            <input type="text" class="form-input" id="in-w3" placeholder="예: 골지체" required />
           </div>
-          <button type="submit" class="btn-submit" style="margin-top: 10px;">➕ 문제 풀에 추가하기</button>
+          <button type="submit" class="btn-submit">➕ 문제 풀에 추가하기</button>
         </form>
 
-        <div class="admin-actions">
-          <button class="btn-sub" onclick="exportQuestionsJSON()">📥 문제 내보내기 (.json)</button>
-          <button class="btn-sub" onclick="document.getElementById('import-file').click()">📤 문제 불러오기 (.json)</button>
-          <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importQuestionsJSON(event)" />
+        <div style="display:flex; gap:10px; padding-top:10px; border-top:1px solid #4338ca;">
+          <button class="btn-sub" style="flex:1;" onclick="exportQuestionsJSON()">📥 문제 내보내기 (.json)</button>
+          <button class="btn-sub" style="flex:1;" onclick="document.getElementById('file-in').click()">📤 문제 불러오기 (.json)</button>
+          <input type="file" id="file-in" style="display:none;" accept=".json" onchange="importQuestionsJSON(event)" />
         </div>
 
-        <div style="margin-top: 10px;">
-          <h4 style="font-size: 0.9rem; margin-bottom: 8px;">현재 등록된 문제 목록 (<span id="total-q-count">0</span>개)</h4>
-          <div id="q-list-container" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+        <div style="margin-top:10px;">
+          <h4 style="font-size:0.85rem; margin-bottom:8px;">등록된 문제 (<span id="q-count">0</span>개)</h4>
+          <div id="q-list" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;"></div>
         </div>
       </div>
     </div>
@@ -625,34 +642,28 @@
       }
     ];
 
-    // 상태 관리 (State)
     let questions = [];
-    let money = 0;
-    let baseReward = 10;
-    let streak = 0;
-    let streakMultiplier = 5;
-    let insuranceRate = 0.5; // 오답 시 50% 감면
-    let passiveIncome = 0;
-
-    // 상점 레벨 및 비용
-    let lvlReward = 1, costReward = 50;
-    let lvlStreak = 1, costStreak = 120;
-    let lvlInsur = 0, costInsur = 200;
-    let lvlPassive = 0, costPassive = 300;
-
+    let myGold = 0;
     let currentQ = null;
-    const GOAL_MONEY = 50000;
-    let goalReached = false;
 
-    // 웹 오디오 API 효과음
+    // 가상 라이벌 봇들 (블루킷처럼 골드 경쟁)
+    let players = [
+      { name: "나 (탐험가)", gold: 0, isMe: true },
+      { name: "호기심많은여우", gold: 50, isMe: false },
+      { name: "열정적인판다", gold: 120, isMe: false },
+      { name: "우주비행사곰", gold: 30, isMe: false },
+      { name: "달리는부엉이", gold: 80, isMe: false }
+    ];
+
+    // 효과음 생성기 (AudioContext)
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playBeep(freq, type, duration) {
+    function playTone(freq, type, duration) {
       try {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -661,65 +672,58 @@
       } catch(e) {}
     }
 
-    // 초기화
+    // 봇들의 자동 활동 (1.5초마다 가끔 문제 맞춰서 골드 변화)
+    setInterval(() => {
+      const bot = players[Math.floor(Math.random() * (players.length - 1)) + 1];
+      const delta = Math.floor(Math.random() * 40) + 10;
+      bot.gold += delta;
+      renderLeaderboard();
+    }, 2000);
+
     function init() {
-      const saved = localStorage.getItem('bio_tycoon_questions');
+      const saved = localStorage.getItem('gold_quest_questions');
       if (saved) {
         try { questions = JSON.parse(saved); } catch(e) { questions = [...defaultQuestions]; }
       } else {
         questions = [...defaultQuestions];
       }
 
-      setInterval(() => {
-        if (passiveIncome > 0) {
-          money += passiveIncome;
-          updateHUD();
-        }
-      }, 1000);
-
-      loadNextQuestion();
-      updateHUD();
+      loadQuestion();
+      renderLeaderboard();
       renderAdminList();
     }
 
-    // HUD 업데이트
-    function updateHUD() {
-      document.getElementById('hud-money').textContent = `$${money.toLocaleString()}`;
-      document.getElementById('hud-reward').textContent = `+$${baseReward + (streak * streakMultiplier)}`;
-      document.getElementById('hud-streak').textContent = `${streak}회`;
-      document.getElementById('hud-passive').textContent = `+$${passiveIncome}/s`;
+    function renderLeaderboard() {
+      // 내 점수 동기화
+      const me = players.find(p => p.isMe);
+      me.gold = myGold;
 
-      // 목표 진행도
-      const progress = Math.min(100, Math.floor((money / GOAL_MONEY) * 100));
-      document.getElementById('goal-progress').textContent = `${progress}% ($${money.toLocaleString()} / $${GOAL_MONEY.toLocaleString()})`;
+      // 골드 높은 순 정렬
+      players.sort((a, b) => b.gold - a.gold);
 
-      if (money >= GOAL_MONEY && !goalReached) {
-        goalReached = true;
-        setTimeout(() => alert("🎉 축하합니다! 연구비 $50,000를 달성하여 우수 생명과학 연구소로 선정되었습니다! 계속해서 자유롭게 연구를 확장해보세요!"), 200);
-      }
+      const listEl = document.getElementById('lb-list');
+      listEl.innerHTML = '';
 
-      // 상점 버튼 상태 갱신
-      document.getElementById('lvl-reward').textContent = `Lv. ${lvlReward} (+$${baseReward})`;
-      document.getElementById('btn-buy-reward').textContent = `$${costReward.toLocaleString()} 구매`;
-      document.getElementById('btn-buy-reward').disabled = money < costReward;
-
-      document.getElementById('lvl-streak').textContent = `Lv. ${lvlStreak} (스트릭당 +$${streakMultiplier})`;
-      document.getElementById('btn-buy-streak').textContent = `$${costStreak.toLocaleString()} 구매`;
-      document.getElementById('btn-buy-streak').disabled = money < costStreak;
-
-      document.getElementById('lvl-insur').textContent = `Lv. ${lvlInsur} (${Math.round(insuranceRate * 100)}% 감면)`;
-      document.getElementById('btn-buy-insur').textContent = insuranceRate >= 0.9 ? "최대 레벨" : `$${costInsur.toLocaleString()} 구매`;
-      document.getElementById('btn-buy-insur').disabled = money < costInsur || insuranceRate >= 0.9;
-
-      document.getElementById('lvl-passive').textContent = `Lv. ${lvlPassive} (+$${passiveIncome}/s)`;
-      document.getElementById('btn-buy-passive').textContent = `$${costPassive.toLocaleString()} 구매`;
-      document.getElementById('btn-buy-passive').disabled = money < costPassive;
+      players.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = `lb-item ${p.isMe ? 'me' : ''}`;
+        item.innerHTML = `
+          <span class="lb-rank">#${idx + 1}</span>
+          <span class="lb-name">${p.name}</span>
+          <span class="lb-score">${p.gold.toLocaleString()} G</span>
+        `;
+        listEl.appendChild(item);
+      });
     }
 
-    // 퀴즈 출제
-    function loadNextQuestion() {
+    // 1. 문제 출제
+    function loadQuestion() {
+      document.getElementById('view-quiz').style.display = 'flex';
+      document.getElementById('view-chest').style.display = 'none';
+      document.getElementById('view-result').style.display = 'none';
+
       if (questions.length === 0) {
-        document.getElementById('q-text').textContent = "등록된 문제가 없습니다. 관리자 모드에서 문제를 추가해주세요!";
+        document.getElementById('q-text').textContent = "문제가 없습니다. 관리자 모드에서 추가해주세요!";
         document.getElementById('options-container').innerHTML = '';
         return;
       }
@@ -730,104 +734,110 @@
       optContainer.innerHTML = '';
 
       const shuffled = currentQ.options
-        .map((opt, i) => ({ text: opt, isCorrect: i === currentQ.answer }))
+        .map((text, idx) => ({ text, isCorrect: idx === currentQ.answer }))
         .sort(() => Math.random() - 0.5);
 
       shuffled.forEach(item => {
         const btn = document.createElement('button');
-        btn.className = 'option-btn';
+        btn.className = 'btn-opt';
         btn.textContent = item.text;
-        btn.onclick = (e) => handleAnswer(item.isCorrect, btn, e);
+        btn.onclick = () => handleAnswer(item.isCorrect, btn);
         optContainer.appendChild(btn);
       });
     }
 
-    // 정답 체크 & 경제 보상
-    function handleAnswer(isCorrect, btnElement, event) {
-      const allBtns = document.querySelectorAll('.option-btn');
+    // 2. 답안 검증
+    function handleAnswer(isCorrect, btn) {
+      const allBtns = document.querySelectorAll('.btn-opt');
       allBtns.forEach(b => b.disabled = true);
 
-      const quizCard = document.getElementById('quiz-card');
-      const floatEl = document.createElement('div');
-      floatEl.className = 'floating-text';
-
       if (isCorrect) {
-        btnElement.classList.add('correct');
-        streak += 1;
-        const reward = baseReward + (streak * streakMultiplier);
-        money += reward;
+        btn.classList.add('correct');
+        playTone(523.25, 'triangle', 0.1);
+        setTimeout(() => playTone(659.25, 'sine', 0.15), 80);
+        setTimeout(() => playTone(783.99, 'sine', 0.25), 160);
 
-        floatEl.textContent = `+$${reward}`;
-        floatEl.style.color = "var(--gold)";
-        playBeep(587.33, 'triangle', 0.1);
-        setTimeout(() => playBeep(880, 'sine', 0.2), 80);
+        // 정답 시 상자 선택 화면으로 전환
+        setTimeout(() => {
+          document.getElementById('view-quiz').style.display = 'none';
+          document.getElementById('view-chest').style.display = 'flex';
+        }, 600);
       } else {
-        btnElement.classList.add('wrong');
-        streak = 0;
-        const loss = Math.floor(baseReward * (1 - insuranceRate));
-        money = Math.max(0, money - loss);
-
-        floatEl.textContent = loss > 0 ? `-$${loss}` : `$0 (보험 적용)`;
-        floatEl.style.color = "var(--danger)";
-        playBeep(220, 'sawtooth', 0.25);
-      }
-
-      // 플로팅 텍스트 위치 잡기
-      floatEl.style.left = `${quizCard.offsetWidth / 2 - 40}px`;
-      floatEl.style.top = `60px`;
-      quizCard.appendChild(floatEl);
-      setTimeout(() => floatEl.remove(), 800);
-
-      updateHUD();
-      setTimeout(loadNextQuestion, 650);
-    }
-
-    // 상점 구매 함수들
-    function buyReward() {
-      if (money >= costReward) {
-        money -= costReward;
-        baseReward += 15;
-        lvlReward++;
-        costReward = Math.floor(costReward * 1.8);
-        playBeep(700, 'sine', 0.15);
-        updateHUD();
+        btn.classList.add('wrong');
+        playTone(220, 'sawtooth', 0.3);
+        // 오답 시 잠시 후 다음 문제로
+        setTimeout(loadQuestion, 800);
       }
     }
 
-    function buyStreak() {
-      if (money >= costStreak) {
-        money -= costStreak;
-        streakMultiplier += 10;
-        lvlStreak++;
-        costStreak = Math.floor(costStreak * 2.1);
-        playBeep(700, 'sine', 0.15);
-        updateHUD();
+    // 3. 블루킷 골드 퀘스트 확률 테이블
+    function pickChest(chestIndex) {
+      playTone(400, 'sine', 0.1);
+      setTimeout(() => playTone(800, 'sine', 0.2), 100);
+
+      const roll = Math.random();
+      let result = { icon: "💰", title: "+50 Gold", desc: "상자에서 금화를 발견했습니다!" };
+
+      // 라이벌 봇 중 1등 찾기 (나 제외)
+      const opponents = players.filter(p => !p.isMe);
+      const topOpponent = opponents.sort((a,b) => b.gold - a.gold)[0];
+
+      if (roll < 0.30) {
+        // 일반 골드 +30~80
+        const gain = Math.floor(Math.random() * 50) + 30;
+        myGold += gain;
+        result = { icon: "💰", title: `+${gain} Gold!`, desc: "상자에서 금화 더미를 발견했습니다!" };
+      } else if (roll < 0.50) {
+        // 대박 골드 +100~250
+        const gain = Math.floor(Math.random() * 150) + 100;
+        myGold += gain;
+        result = { icon: "💎", title: `+${gain} Gold!!`, desc: "희귀한 대형 보물 상자였습니다!" };
+      } else if (roll < 0.65) {
+        // 1.5배 또는 2배 뻥튀기
+        const mult = Math.random() < 0.6 ? 1.5 : 2.0;
+        const before = myGold;
+        myGold = Math.floor(myGold * mult);
+        const diff = myGold - before;
+        result = { icon: "⚡", title: `x${mult} 배수 보너스!`, desc: `보유 골드가 뻥튀기되었습니다! (+${diff} G)` };
+      } else if (roll < 0.80 && topOpponent && topOpponent.gold > 20) {
+        // 상대 20% 스틸 (Steal 20%)
+        const stolen = Math.floor(topOpponent.gold * 0.25);
+        topOpponent.gold -= stolen;
+        myGold += stolen;
+        result = { icon: "🦹", title: `골드 스틸 (+${stolen} G)`, desc: `'${topOpponent.name}' 님의 골드를 빼앗아왔습니다!` };
+      } else if (roll < 0.90 && topOpponent && topOpponent.gold > myGold) {
+        // 골드 스왑 (SWAP)
+        const temp = myGold;
+        myGold = topOpponent.gold;
+        topOpponent.gold = temp;
+        result = { icon: "🔄", title: "골드 SWAP!!", desc: `1등인 '${topOpponent.name}' 님과 골드를 맞바꿨습니다!` };
+      } else if (roll < 0.95 && myGold > 30) {
+        // 25% 손실 함정
+        const loss = Math.floor(myGold * 0.25);
+        myGold -= loss;
+        result = { icon: "💣", title: `함정 폭탄! (-${loss} G)`, desc: "상자 속 폭탄이 터져 골드를 잃었습니다." };
+      } else {
+        // 꽝
+        result = { icon: "💨", title: "꽝! (텅 빈 상자)", desc: "상자가 비어 있었습니다. 아쉽네요!" };
       }
+
+      // 화면에 결과 표시
+      document.getElementById('player-gold').textContent = myGold.toLocaleString();
+      document.getElementById('res-icon').textContent = result.icon;
+      document.getElementById('res-title').textContent = result.title;
+      document.getElementById('res-desc').textContent = result.desc;
+
+      document.getElementById('view-chest').style.display = 'none';
+      document.getElementById('view-result').style.display = 'flex';
+
+      renderLeaderboard();
     }
 
-    function buyInsur() {
-      if (money >= costInsur && insuranceRate < 0.9) {
-        money -= costInsur;
-        insuranceRate = Math.min(0.9, insuranceRate + 0.15);
-        lvlInsur++;
-        costInsur = Math.floor(costInsur * 2.3);
-        playBeep(700, 'sine', 0.15);
-        updateHUD();
-      }
+    function nextQuestion() {
+      loadQuestion();
     }
 
-    function buyPassive() {
-      if (money >= costPassive) {
-        money -= costPassive;
-        passiveIncome += 10;
-        lvlPassive++;
-        costPassive = Math.floor(costPassive * 2.0);
-        playBeep(700, 'sine', 0.15);
-        updateHUD();
-      }
-    }
-
-    // 관리자 모달 제어
+    // 관리자 모달 함수들
     function openAdminModal() {
       document.getElementById('admin-modal').classList.add('active');
     }
@@ -837,18 +847,16 @@
     }
 
     function renderAdminList() {
-      document.getElementById('total-q-count').textContent = questions.length;
-      const list = document.getElementById('q-list-container');
+      document.getElementById('q-count').textContent = questions.length;
+      const list = document.getElementById('q-list');
       list.innerHTML = '';
 
       questions.forEach((q, idx) => {
         const item = document.createElement('div');
-        item.className = 'question-list-item';
+        item.style.cssText = "background:#0f172a; padding:8px 12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;";
         item.innerHTML = `
-          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">
-            <strong>#${idx+1}</strong> ${q.q}
-          </span>
-          <button class="btn-delete" onclick="deleteQuestion(${idx})">&times;</button>
+          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">#${idx+1} ${q.q}</span>
+          <button onclick="deleteQuestion(${idx})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-weight:bold;">삭제</button>
         `;
         list.appendChild(item);
       });
@@ -856,21 +864,20 @@
 
     function handleAddNewQuestion(e) {
       e.preventDefault();
-      const qText = document.getElementById('input-q-text').value.trim();
-      const correct = document.getElementById('input-correct').value.trim();
-      const w1 = document.getElementById('input-wrong-1').value.trim();
-      const w2 = document.getElementById('input-wrong-2').value.trim();
-      const w3 = document.getElementById('input-wrong-3').value.trim();
+      const q = document.getElementById('in-q').value.trim();
+      const ans = document.getElementById('in-ans').value.trim();
+      const w1 = document.getElementById('in-w1').value.trim();
+      const w2 = document.getElementById('in-w2').value.trim();
+      const w3 = document.getElementById('in-w3').value.trim();
 
-      const newQ = {
-        q: qText,
-        options: [correct, w1, w2, w3],
+      questions.push({
+        q: q,
+        options: [ans, w1, w2, w3],
         answer: 0
-      };
+      });
 
-      questions.push(newQ);
-      localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
-      document.getElementById('add-q-form').reset();
+      localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
+      e.target.reset();
       renderAdminList();
       alert("문제가 성공적으로 등록되었습니다!");
     }
@@ -878,9 +885,9 @@
     function deleteQuestion(idx) {
       if (confirm("이 문제를 삭제하시겠습니까?")) {
         questions.splice(idx, 1);
-        localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
+        localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
         renderAdminList();
-        loadNextQuestion();
+        loadQuestion();
       }
     }
 
@@ -888,33 +895,32 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 2));
       const dlAnchor = document.createElement('a');
       dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "quiz_questions.json");
+      dlAnchor.setAttribute("download", "gold_quest_questions.json");
       dlAnchor.click();
     }
 
-    function importQuestionsJSON(event) {
-      const file = event.target.files[0];
+    function importQuestionsJSON(e) {
+      const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function(evt) {
         try {
-          const imported = JSON.parse(e.target.result);
+          const imported = JSON.parse(evt.target.result);
           if (Array.isArray(imported)) {
             questions = imported;
-            localStorage.setItem('bio_tycoon_questions', JSON.stringify(questions));
+            localStorage.setItem('gold_quest_questions', JSON.stringify(questions));
             renderAdminList();
-            loadNextQuestion();
-            alert("문제 데이터를 성공적으로 불러왔습니다!");
+            loadQuestion();
+            alert("문제를 성공적으로 불러왔습니다!");
           }
         } catch(err) {
-          alert("유효한 JSON 파일이 아닙니다.");
+          alert("유효한 JSON 파일 형식이 아닙니다.");
         }
       };
       reader.readAsText(file);
     }
 
-    // 실행
     window.onload = init;
   </script>
 </body>
