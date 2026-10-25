@@ -1797,4 +1797,354 @@
         elapsed += 0.1;
         const leftPct = Math.max(0, 100 - (elapsed / quizLimitSec) * 100);
         timerFill.style.width = leftPct + '%';
-        document.getElementById('q-time-txt
+        document.getElementById('q-time-txt').textContent = `${Math.ceil(quizLimitSec - elapsed)}초`;
+        if (elapsed >= quizLimitSec) {
+          clearInterval(quizLimitTimer);
+          handleAnswerSelect(false, "시간 초과", qId);
+        }
+      }, 100);
+
+      const shuffled = currentQuizItem.opts.map((opt, i) => ({ text: opt, isCorrect: i === currentQuizItem.ans })).sort(() => Math.random() - 0.5);
+      shuffled.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = item.text;
+        btn.onclick = () => {
+          clearInterval(quizLimitTimer);
+          handleAnswerSelect(item.isCorrect, item.text, qId);
+        };
+        optsEl.appendChild(btn);
+      });
+    }
+
+    function handleAnswerSelect(isCorrect, selectedText, qId) {
+      document.getElementById('quiz-overlay').style.display = 'none';
+
+      // 문항별 정답/오답 횟수 및 오답 학생 실명 기록
+      const statRef = db.ref(`games/${gamePin}/stats/${qId}`);
+      statRef.transaction(current => {
+        if (!current) current = { attempts: 0, wrongs: 0 };
+        current.attempts = (current.attempts || 0) + 1;
+        if (!isCorrect) current.wrongs = (current.wrongs || 0) + 1;
+        return current;
+      });
+
+      if (!isCorrect) {
+        // 누가 어떤 오답을 골랐는지 Firebase에 저장
+        db.ref(`games/${gamePin}/stats/${qId}/wrongLogs`).push({
+          name: myName,
+          choice: selectedText
+        });
+
+        myWrongAnswers.push({
+          unit: currentQuizItem.unit || '기타',
+          question: currentQuizItem.q,
+          userChoice: selectedText,
+          correctAnswer: currentQuizItem.opts[currentQuizItem.ans]
+        });
+        triggerWrongPenalty();
+      } else {
+        document.getElementById('chest-overlay').style.display = 'flex';
+      }
+    }
+
+    function triggerWrongPenalty() {
+      const penScreen = document.getElementById('penalty-screen');
+      penScreen.style.display = 'flex';
+      let count = quizLimitSec;
+      document.getElementById('penalty-count').textContent = count;
+
+      const pId = setInterval(() => {
+        count--;
+        document.getElementById('penalty-count').textContent = count;
+        if (count <= 0) {
+          clearInterval(pId);
+          penScreen.style.display = 'none';
+          resumeFlightMode();
+        }
+      }, 1000);
+    }
+
+    // 교사가 설정한 확률 가중치에 따른 아이템 추첨
+    function rollWeightedItem() {
+      const entries = Object.entries(itemWeights).filter(([k, w]) => Number(w) > 0);
+      if (entries.length === 0) return "MULTISHOT";
+      const total = entries.reduce((acc, [k, w]) => acc + Number(w), 0);
+      let r = Math.random() * total;
+      for (const [key, weight] of entries) {
+        r -= Number(weight);
+        if (r <= 0) return key;
+      }
+      return entries[0][0];
+    }
+
+    function broadcastGameEvent(msg) {
+      db.ref(`games/${gamePin}/lastEvent`).set(msg);
+    }
+
+    function pickRewardChest(idx) {
+      document.getElementById('chest-overlay').style.display = 'none';
+      const chosenKey = rollWeightedItem();
+
+      switch (chosenKey) {
+        case "MULTISHOT":
+          plane.shotCount = Math.min(7, plane.shotCount + 1);
+          updateSpecHUD();
+          showToast(`⚡ 주포 멀티샷 증설! (${plane.shotCount}갈래 동시 발사)`);
+          resumeFlightMode();
+          break;
+
+        case "FIREPOWER":
+          plane.damage += 1.5;
+          plane.fireDelay = Math.max(0.09, plane.fireDelay - 0.025);
+          updateSpecHUD();
+          showToast(`🔥 기관포 화력(Lv.${plane.damage}) 및 연사속도 개조 완료!`);
+          resumeFlightMode();
+          break;
+
+        case "WINGMAN":
+          if (plane.wingmen < 4) {
+            plane.wingmen++;
+            updateSpecHUD();
+            showToast(`🛩️ 편대 호위기 합류! (현재 ${plane.wingmen}대 지원 사격)`);
+          } else {
+            plane.damage += 2;
+            updateSpecHUD();
+            showToast(`🛩️ 호위기 풀편대 보너스! 주포 화력 +2 상승!`);
+          }
+          resumeFlightMode();
+          break;
+
+        case "PLASMA":
+          plane.piercePlasma = true;
+          plane.damage += 1;
+          updateSpecHUD();
+          showToast(`💠 대구경 관통 플라즈마포 장착 완료!`);
+          resumeFlightMode();
+          break;
+
+        case "KILL_MULT":
+          plane.scoreMult = Math.min(6, plane.scoreMult + 1);
+          updateSpecHUD();
+          showToast(`⛏️ 골드 채굴 부스터 가동! (적 격추 골드 x${plane.scoreMult}배)`);
+          resumeFlightMode();
+          break;
+
+        case "NUKE":
+          // 전술 핵폭탄: 일반 적 전멸 + 보스 체력 35% 강타
+          let nukeGold = 300;
+          for (let i = enemies.length - 1; i >= 0; i--) {
+            const en = enemies[i];
+            spawnExplosion(en.x, en.y, 'huge');
+            if (en.type === 'boss') {
+              en.hp = Math.max(10, en.hp - en.maxHp * 0.35);
+              nukeGold += 300;
+            } else {
+              nukeGold += 25;
+              enemies.splice(i, 1);
+            }
+          }
+          enemyBullets = [];
+          addPlayerGold(nukeGold);
+          broadcastGameEvent(`☢️ ${myName} 님이 전술 핵폭탄을 투하했습니다! (+${nukeGold}G)`);
+          showToast(`☢️ 전술 핵폭탄 투하! 적군 섬멸 (+${nukeGold}G)`);
+          resumeFlightMode();
+          break;
+
+        case "GOLD_RAIN":
+          const rain = Math.floor(Math.random() * 700) + 500;
+          addPlayerGold(rain);
+          showToast(`🎁 황금 보급품 획득! 즉시 +${rain.toLocaleString()}G!`);
+          resumeFlightMode();
+          break;
+
+        case "GOLD_X2":
+          const gain2 = Math.max(300, myGold);
+          addPlayerGold(gain2);
+          broadcastGameEvent(`💰 ${myName} 님이 보유 골드 2배(x2)를 뽑았습니다!`);
+          showToast(`💰 대박! 보유 골드 2배 뻥튀기! (+${gain2.toLocaleString()}G)`);
+          resumeFlightMode();
+          break;
+
+        case "GOLD_X3":
+          const gain3 = Math.max(600, myGold * 2);
+          addPlayerGold(gain3);
+          broadcastGameEvent(`💎 [잭팟] ${myName} 님이 보유 골드 3배(x3)를 터뜨렸습니다!!`);
+          showToast(`💎 잭팟!! 보유 골드 3배 폭증! (+${gain3.toLocaleString()}G)`);
+          resumeFlightMode();
+          break;
+
+        case "TAX_ALL":
+          const others = currentPlayers.filter(p => p.id !== myId && p.gold > 0);
+          let totalTax = 0;
+          others.forEach(p => {
+            const tax = Math.floor(p.gold * 0.15);
+            if (tax > 0) {
+              totalTax += tax;
+              db.ref(`games/${gamePin}/players/${p.id}`).update({
+                gold: Math.max(0, p.gold - tax),
+                alertMsg: `👑 ${myName} 님에게 세금 15%(-${tax}G)를 징수당했습니다!`
+              });
+            }
+          });
+          const finalTax = Math.max(250, totalTax);
+          addPlayerGold(finalTax);
+          broadcastGameEvent(`👑 ${myName} 님이 전체 플레이어에게서 세금 ${finalTax.toLocaleString()}G를 징수했습니다!`);
+          showToast(`👑 전체 세금 15% 징수 완료! (+${finalTax.toLocaleString()}G)`);
+          resumeFlightMode();
+          break;
+
+        case "STEAL_40":
+          showTargetSelect("STEAL");
+          break;
+
+        case "SWAP_RANK":
+          showTargetSelect("SWAP");
+          break;
+      }
+    }
+
+    function showTargetSelect(mode) {
+      const others = currentPlayers.filter(p => p.id !== myId);
+      if (others.length === 0) {
+        addPlayerGold(300);
+        showToast(`💰 다른 파일럿이 없어 보급금 +300G를 획득했습니다!`);
+        resumeFlightMode();
+        return;
+      }
+
+      document.getElementById('target-overlay').style.display = 'flex';
+      document.getElementById('target-title').textContent = mode === "STEAL"
+        ? "🦹 누구의 보유 골드를 40% 강탈하겠습니까?"
+        : "🔄 누구와 내 보유 골드를 1:1로 맞바꾸겠습니까(SWAP)?";
+      const list = document.getElementById('target-list');
+      list.innerHTML = '';
+
+      others.slice(0, 12).forEach(target => {
+        const btn = document.createElement('button');
+        btn.className = 'target-btn';
+        btn.textContent = `${target.name} (${target.gold.toLocaleString()} G)`;
+        btn.onclick = () => {
+          document.getElementById('target-overlay').style.display = 'none';
+          if (mode === "STEAL") {
+            const stolen = Math.floor(target.gold * 0.40);
+            db.ref(`games/${gamePin}/players/${target.id}`).update({
+              gold: Math.max(0, target.gold - stolen),
+              alertMsg: `🚨 ${myName} 님에게 골드 40%(-${stolen.toLocaleString()}G)를 강탈당했습니다!`
+            });
+            addPlayerGold(stolen);
+            broadcastGameEvent(`🦹 ${myName} 님이 ${target.name} 님의 골드 ${stolen.toLocaleString()}G를 강탈했습니다!`);
+            showToast(`🦹 '${target.name}' 님의 골드 ${stolen.toLocaleString()}G 강탈 성공!`);
+          } else {
+            const theirGold = target.gold;
+            const myOldGold = myGold;
+            myGold = theirGold;
+            db.ref(`games/${gamePin}/players/${target.id}`).update({
+              gold: myOldGold,
+              alertMsg: `🔄 ${myName} 님이 순위 뒤집기(SWAP)로 당신과 골드를 맞바꿨습니다!`
+            });
+            db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+            document.getElementById('hud-my-score').textContent = `${myGold.toLocaleString()} G`;
+            broadcastGameEvent(`🔄 [대역전] ${myName} 님이 ${target.name} 님과 보유 골드를 맞바꿨습니다!`);
+            showToast(`🔄 '${target.name}' 님과 골드 SWAP 대역전 성공!`);
+          }
+          resumeFlightMode();
+        };
+        list.appendChild(btn);
+      });
+    }
+
+    function resumeFlightMode() {
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      isShootingActive = true;
+      lastFrameTime = 0;
+      resetQuizCycle();
+      animFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function showFinalLeaderboard() {
+      isShootingActive = false;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      clearInterval(quizCountdownTimer);
+      clearInterval(quizLimitTimer);
+
+      document.getElementById('quiz-overlay').style.display = 'none';
+      document.getElementById('penalty-screen').style.display = 'none';
+      document.getElementById('chest-overlay').style.display = 'none';
+      document.getElementById('target-overlay').style.display = 'none';
+
+      const finalScreen = document.getElementById('final-rank-screen');
+      finalScreen.style.display = 'flex';
+
+      const podiumBox = document.getElementById('podium-box');
+      const listEl = document.getElementById('full-rank-list');
+      listEl.innerHTML = '';
+
+      const p1 = currentPlayers[0], p2 = currentPlayers[1], p3 = currentPlayers[2];
+      podiumBox.innerHTML = `
+        <div class="podium-slot">
+          <div style="font-size:0.8rem; font-weight:800; margin-bottom:4px;">${p2 ? p2.name : '-'}</div>
+          <div class="podium-block rank-2">2위</div>
+          <div style="font-size:0.75rem; color:#cbd5e1; margin-top:2px;">${p2 ? p2.gold.toLocaleString() : 0}G</div>
+        </div>
+        <div class="podium-slot">
+          <div style="font-size:0.9rem; font-weight:900; color:var(--gold); margin-bottom:4px;">👑 ${p1 ? p1.name : '-'}</div>
+          <div class="podium-block rank-1">1위</div>
+          <div style="font-size:0.85rem; color:var(--gold); font-weight:800; margin-top:2px;">${p1 ? p1.gold.toLocaleString() : 0}G</div>
+        </div>
+        <div class="podium-slot">
+          <div style="font-size:0.8rem; font-weight:800; margin-bottom:4px;">${p3 ? p3.name : '-'}</div>
+          <div class="podium-block rank-3">3위</div>
+          <div style="font-size:0.75rem; color:#cbd5e1; margin-top:2px;">${p3 ? p3.gold.toLocaleString() : 0}G</div>
+        </div>
+      `;
+
+      currentPlayers.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'full-rank-item';
+        item.style.borderColor = p.id === myId ? 'var(--gold)' : '#1e3a5f';
+        item.innerHTML = `<span>#${idx+1}위 ${p.name} ${p.id === myId ? '(나)' : ''}</span><span style="color:var(--gold);">${p.gold.toLocaleString()} G</span>`;
+        listEl.appendChild(item);
+      });
+    }
+
+    function toggleWrongReview() {
+      const container = document.getElementById('wrong-review-container');
+      if (container.style.display === 'flex') {
+        container.style.display = 'none';
+        return;
+      }
+      container.style.display = 'flex';
+      container.innerHTML = '';
+
+      if (myWrongAnswers.length === 0) {
+        container.innerHTML = `
+          <div style="background:#0f1e36; border:1px solid #22c55e; border-radius:10px; padding:16px; text-align:center; color:#86efac; font-weight:800;">
+            🎉 완벽합니다! 틀린 문제가 하나도 없습니다! (정답률 100%)
+          </div>
+        `;
+        return;
+      }
+
+      myWrongAnswers.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'wrong-item-card';
+        card.innerHTML = `
+          <div class="q-title"><span style="color:var(--cyan);">[${item.unit}]</span> <strong>오답 ${idx+1}.</strong> ${item.question}</div>
+          <div class="my-wrong">❌ 내가 선택한 답: ${item.userChoice}</div>
+          <div class="correct-ans">✅ 정답: ${item.correctAnswer}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.onload = () => {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('role') === 'player' && p.get('pin')) {
+        gamePin = p.get('pin');
+        switchScreen('screen-player-login');
+      }
+    };
+  </script>
+</body>
+</html>
