@@ -19,22 +19,22 @@
       --cyan: #38bdf8;
       --danger: #ef4444;
       --success: #22c55e;
-      --purple: #a855f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; user-select: none; }
     body { background: radial-gradient(circle at center, #0f2942, #050b14); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-x: hidden; }
 
-    .container { width: 100%; max-width: 1020px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; position: relative; }
-    .card { background: var(--panel); border: 2px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.8); position: relative; }
+    .container { width: 100%; max-width: 1020px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; position: relative; z-index: 1; }
+    .card { background: var(--panel); border: 2px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.8); position: relative; z-index: 5; }
 
-    .screen { display: none; width: 100%; flex-direction: column; align-items: center; }
-    .screen.active { display: flex; }
+    .screen { display: none !important; width: 100%; flex-direction: column; align-items: center; }
+    .screen.active { display: flex !important; }
 
-    .btn-main { background: linear-gradient(135deg, #22c55e, #15803d); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-size: 1.1rem; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35); transition: transform 0.15s; }
+    .btn-main { background: linear-gradient(135deg, #22c55e, #15803d); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-size: 1.15rem; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35); transition: transform 0.15s; position: relative; z-index: 20; pointer-events: auto; }
     .btn-main:hover { transform: scale(1.03); }
+    .btn-main:active { transform: scale(0.98); }
 
-    .btn-sub { background: #1e3a5f; border: 1px solid var(--cyan); color: white; padding: 8px 14px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.85rem; }
+    .btn-sub { background: #1e3a5f; border: 1px solid var(--cyan); color: white; padding: 8px 14px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.85rem; position: relative; z-index: 20; }
     .btn-sub:hover { background: #2563eb; }
 
     /* ================= 호스트 화면 (교사) ================= */
@@ -49,7 +49,7 @@
     .host-settings-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; width: 100%; }
     .setting-box { background: #07111e; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 4px; }
     .setting-box label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
-    .setting-box select { background: #07111e; border: none; color: white; font-weight: 800; font-size: 0.9rem; outline: none; }
+    .setting-box select { background: #07111e; border: none; color: white; font-weight: 800; font-size: 0.9rem; outline: none; cursor: pointer; }
 
     /* 교사용 실시간 순위판 & 통계 화면 */
     .host-live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; width: 100%; max-height: 42vh; overflow-y: auto; }
@@ -58,7 +58,6 @@
     .live-lb-item.top2 { border-color: #cbd5e1; }
     .live-lb-item.top3 { border-color: #b45309; }
 
-    /* 실시간 교사 전광판 이벤트 로그 */
     .live-event-ticker { width: 100%; background: #07111e; border: 1px solid #38bdf8; border-radius: 10px; padding: 8px 14px; margin-top: 10px; font-size: 0.9rem; font-weight: 800; color: var(--gold); display: flex; justify-content: space-between; align-items: center; }
 
     /* 문항별 오답률 & 오답 학생 실명 리포트 */
@@ -77,19 +76,16 @@
     #game-wrapper { width: 100%; max-width: 460px; height: 96vh; position: relative; border-radius: 18px; overflow: hidden; border: 3px solid #38bdf8; background: #0b4f8a; display: none; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.9); touch-action: none; }
     #flightCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
 
-    /* 상단 밀리터리 HUD */
     .hud-top-frame { position: absolute; top: 8px; left: 8px; right: 8px; height: 56px; background: rgba(7, 17, 30, 0.9); border: 2px solid #fbbf24; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 10; backdrop-filter: blur(4px); }
     .hud-score-val { font-size: 1.2rem; font-weight: 900; color: var(--gold); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
     .hud-rank-tag { font-size: 0.78rem; font-weight: 800; color: #38bdf8; }
     .hud-spec-tag { font-size: 0.72rem; color: #86efac; font-weight: 800; text-align: center; line-height: 1.3; }
 
-    /* 상단 Top 10 순위 띠 */
     .rank-ticker-bar { position: absolute; top: 68px; left: 8px; right: 8px; display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; font-size: 0.72rem; font-weight: 800; color: #e2e8f0; z-index: 10; scrollbar-width: none; }
     .rank-ticker-bar::-webkit-scrollbar { display: none; }
     .ticker-pill { background: rgba(7, 17, 30, 0.78); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.15); }
     .ticker-pill.me { border-color: var(--gold); color: var(--gold); background: rgba(66, 44, 6, 0.9); }
 
-    /* 퀴즈 팝업 오버레이 */
     .quiz-overlay { position: absolute; inset: 0; background: rgba(7, 17, 30, 0.96); display: none; flex-direction: column; padding: 22px; z-index: 50; justify-content: center; gap: 16px; }
     .quiz-timer-line { width: 100%; height: 8px; background: #1e3a5f; border-radius: 4px; overflow: hidden; }
     .quiz-timer-fill { width: 100%; height: 100%; background: var(--gold); transition: width 0.1s linear; }
@@ -97,11 +93,9 @@
     .opt-btn:hover { border-color: var(--cyan); background: #162a4a; }
     .opt-btn:active { transform: scale(0.98); }
 
-    /* 오답 대기 페널티 */
     .penalty-screen { position: absolute; inset: 0; background: rgba(185, 28, 28, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 60; gap: 14px; text-align: center; padding: 20px; }
     .penalty-count { font-size: 4.5rem; font-weight: 900; color: white; }
 
-    /* 상자 선택 오버레이 */
     .chest-overlay { position: absolute; inset: 0; background: rgba(7, 17, 30, 0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 50; gap: 16px; padding: 16px; text-align: center; }
     .chest-row { display: flex; gap: 12px; width: 100%; justify-content: center; }
     .chest-btn { width: 30%; height: 135px; background: linear-gradient(145deg, #1e3a5f, #0f1e36); border: 2px solid var(--gold); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: transform 0.15s; }
@@ -113,7 +107,6 @@
     .target-overlay { position: absolute; inset: 0; background: rgba(7, 17, 30, 0.96); display: none; flex-direction: column; padding: 20px; z-index: 70; justify-content: center; gap: 12px; }
     .target-btn { background: #1e3a5f; border: 1px solid var(--gold); color: white; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; }
 
-    /* 최종 순위 화면 */
     .final-rank-screen { position: absolute; inset: 0; background: #07111e; display: none; flex-direction: column; padding: 20px; z-index: 90; overflow-y: auto; align-items: center; gap: 14px; }
     .podium-box { display: flex; align-items: flex-end; justify-content: center; gap: 12px; width: 100%; margin: 10px 0; }
     .podium-slot { display: flex; flex-direction: column; align-items: center; width: 30%; text-align: center; }
@@ -131,11 +124,10 @@
     .wrong-item-card .my-wrong { color: #fca5a5; font-size: 0.85rem; margin-bottom: 4px; }
     .wrong-item-card .correct-ans { color: #86efac; font-size: 0.85rem; font-weight: 700; }
 
-    /* 교사용 모달 공통 */
+    /* 모달 공통 */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 100; padding: 16px; }
     .modal-card { background: #0f1e36; border: 2px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 740px; max-height: 90vh; display: flex; flex-direction: column; padding: 20px; gap: 12px; overflow-y: auto; }
 
-    /* 확률 설정 그리드 */
     .prob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 52vh; overflow-y: auto; padding-right: 4px; }
     .prob-item { background: #07111e; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .prob-item input { width: 65px; background: #0f1e36; border: 1px solid #38bdf8; color: var(--gold); padding: 6px; border-radius: 6px; font-weight: 900; text-align: center; }
@@ -156,9 +148,9 @@
     <div id="screen-select" class="screen card active" style="text-align: center; gap: 20px;">
       <h1 style="color: var(--gold); font-size: 2.2rem; font-weight: 900;">🛩️ 1945 AERO QUEST</h1>
       <p style="color: #94a3b8;">태평양 해전 탄막 슈팅 & 단원별 실시간 대역전 퀴즈 배틀</p>
-      <div style="display: flex; gap: 14px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-        <button class="btn-main" onclick="initHost()">👨‍🏫 교사 화면 (호스트 열기)</button>
-        <button class="btn-main" style="background: linear-gradient(135deg, #38bdf8, #0284c7);" onclick="initPlayerEntry()">📱 학생 화면 (참여하기)</button>
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 12px; flex-wrap: wrap;">
+        <button id="btn-enter-host" type="button" class="btn-main" onclick="initHost()">👨‍🏫 교사 화면 (호스트 열기)</button>
+        <button id="btn-enter-player" type="button" class="btn-main" style="background: linear-gradient(135deg, #38bdf8, #0284c7);" onclick="initPlayerEntry()">📱 학생 화면 (참여하기)</button>
       </div>
     </div>
 
@@ -170,9 +162,9 @@
           <span style="color: #94a3b8; font-size: 0.88rem;">학생들에게 QR 코드를 스캔하게 하세요</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button class="btn-sub" onclick="openProbModal()">🎲 아이템 확률 설정</button>
-          <button class="btn-sub" onclick="openAdminModal()">⚙️ 단원 및 문제 편집</button>
-          <button class="btn-sub" style="background:#334155; border-color:#64748b;" onclick="goMainScreen()">🏠 메인으로</button>
+          <button type="button" class="btn-sub" onclick="openProbModal()">🎲 아이템 확률 설정</button>
+          <button type="button" class="btn-sub" onclick="openAdminModal()">⚙️ 단원 및 문제 편집</button>
+          <button type="button" class="btn-sub" style="background:#334155; border-color:#64748b;" onclick="goMainScreen()">🏠 메인으로</button>
           <div style="font-size: 1.7rem; font-weight: 900; color: #38bdf8; margin-left:6px;" id="host-pin-val">0000</div>
         </div>
       </div>
@@ -233,7 +225,7 @@
         </div>
       </div>
 
-      <button class="btn-main" style="width: 100%; margin-top: 16px;" onclick="hostStartGame()">🔥 출격 개시! (전원 동시 시작)</button>
+      <button type="button" class="btn-main" style="width: 100%; margin-top: 16px;" onclick="hostStartGame()">🔥 출격 개시! (전원 동시 시작)</button>
     </div>
 
     <!-- 3. 교사 호스트: 실시간 순위 & 오답률/오답자 리포트 -->
@@ -245,13 +237,12 @@
         </div>
         <div style="font-size: 2.3rem; font-weight: 900; color: var(--danger);" id="host-timer-text">05:00</div>
         <div style="display:flex; gap:8px;">
-          <button id="btn-host-finish" onclick="hostEndGame()" style="background:#ef4444; border:none; color:white; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer;">게임 종료</button>
-          <button id="btn-host-reopen" onclick="initHost()" style="display:none; background:#2563eb; border:none; color:white; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer;">🔄 새 대기실 열기</button>
-          <button onclick="goMainScreen()" style="background:#334155; border:none; color:white; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;">🏠 메인 화면</button>
+          <button type="button" id="btn-host-finish" onclick="hostEndGame()" style="background:#ef4444; border:none; color:white; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer;">게임 종료</button>
+          <button type="button" id="btn-host-reopen" onclick="initHost()" style="display:none; background:#2563eb; border:none; color:white; padding:10px 18px; border-radius:8px; font-weight:800; cursor:pointer;">🔄 새 대기실 열기</button>
+          <button type="button" onclick="goMainScreen()" style="background:#334155; border:none; color:white; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;">🏠 메인 화면</button>
         </div>
       </div>
 
-      <!-- 실시간 아이템 발동 중계 바 -->
       <div class="live-event-ticker">
         <span id="host-live-event">🛰️ 전투 중계: 모든 편대가 출격했습니다!</span>
         <span id="host-wave-badge" style="color:#38bdf8;">위협 단계: WAVE Lv.1</span>
@@ -272,8 +263,8 @@
     <div id="screen-player-login" class="screen card" style="max-width: 440px; text-align: center; gap: 16px;">
       <h2 style="color: var(--gold); font-size: 1.8rem;">🛩️ 파일럿 등록</h2>
       <input type="text" id="player-name-in" placeholder="이름(닉네임) 입력" maxlength="8" style="background:#07111e; border:2px solid var(--card-border); color:white; padding:14px; border-radius:12px; font-size:1.1rem; width:100%; text-align:center; font-weight:800;" />
-      <button class="btn-main" style="width: 100%;" onclick="playerJoin()">대기실 입장 ➔</button>
-      <button class="btn-sub" style="width: 100%; background:#334155; border:none; padding:10px;" onclick="goMainScreen()">🏠 메인 화면으로</button>
+      <button type="button" class="btn-main" style="width: 100%;" onclick="playerJoin()">대기실 입장 ➔</button>
+      <button type="button" class="btn-sub" style="width: 100%; background:#334155; border:none; padding:10px;" onclick="goMainScreen()">🏠 메인 화면으로</button>
     </div>
 
     <!-- 5. 학생: 대기 중 화면 -->
@@ -281,7 +272,7 @@
       <div style="font-size: 3rem;">🛩️</div>
       <h2 id="wait-name-display" style="color: #38bdf8;"></h2>
       <p style="font-size: 1.1rem; font-weight: 700;">출격 대기 중! 선생님이 시작하면 동시에 출발합니다.</p>
-      <button class="btn-sub" style="background:#334155; border:none;" onclick="goMainScreen()">🏠 나가기 (메인 화면)</button>
+      <button type="button" class="btn-sub" style="background:#334155; border:none;" onclick="goMainScreen()">🏠 나가기 (메인 화면)</button>
     </div>
 
     <!-- 6. 학생: 1945 해전 슈팅 화면 -->
@@ -344,10 +335,10 @@
         <div class="podium-box" id="podium-box"></div>
         <div class="full-rank-list" id="full-rank-list"></div>
 
-        <button class="btn-main" style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #38bdf8, #0284c7);" onclick="toggleWrongReview()">📝 나의 오답 풀이 확인하기</button>
+        <button type="button" class="btn-main" style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #38bdf8, #0284c7);" onclick="toggleWrongReview()">📝 나의 오답 풀이 확인하기</button>
         <div class="wrong-review-container" id="wrong-review-container" style="display: none;"></div>
 
-        <button class="btn-main" style="margin-top: 8px; background: #334155; width: 100%;" onclick="goMainScreen()">🏠 메인 화면으로 돌아가기</button>
+        <button type="button" class="btn-main" style="margin-top: 8px; background: #334155; width: 100%;" onclick="goMainScreen()">🏠 메인 화면으로 돌아가기</button>
       </div>
     </div>
 
@@ -358,19 +349,19 @@
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3 style="color:var(--gold);">🎲 상자 아이템 등장 확률 설정 (클라우드 영구 저장)</h3>
-        <button onclick="closeProbModal()" style="background:none; border:none; color:white; font-size:1.6rem; cursor:pointer;">&times;</button>
+        <button type="button" onclick="closeProbModal()" style="background:none; border:none; color:white; font-size:1.6rem; cursor:pointer;">&times;</button>
       </div>
       <p style="font-size:0.82rem; color:#94a3b8;">각 아이템의 가중치(숫자)를 입력하면 전체 합계 대비 <strong>실제 등장 확률(%)</strong>이 자동 계산됩니다. (0으로 두면 등장하지 않음)</p>
 
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn-sub" onclick="applyProbPreset('BALANCED')">⚖️ 표준 밸런스형</button>
-        <button class="btn-sub" onclick="applyProbPreset('COMBAT')">🛩️ 탄막 화력전 중심</button>
-        <button class="btn-sub" style="border-color:var(--gold); color:var(--gold);" onclick="applyProbPreset('CHAOS')">🔥 대역전 카오스 (도박장)</button>
+        <button type="button" class="btn-sub" onclick="applyProbPreset('BALANCED')">⚖️ 표준 밸런스형</button>
+        <button type="button" class="btn-sub" onclick="applyProbPreset('COMBAT')">🛩️ 탄막 화력전 중심</button>
+        <button type="button" class="btn-sub" style="border-color:var(--gold); color:var(--gold);" onclick="applyProbPreset('CHAOS')">🔥 대역전 카오스 (도박장)</button>
       </div>
 
       <div class="prob-grid" id="prob-grid"></div>
 
-      <button class="btn-main" onclick="saveProbSettings()" style="width:100%; padding:12px;">💾 확률 설정 클라우드 저장하기</button>
+      <button type="button" class="btn-main" onclick="saveProbSettings()" style="width:100%; padding:12px;">💾 확률 설정 클라우드 저장하기</button>
     </div>
   </div>
 
@@ -379,7 +370,7 @@
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3 style="color:var(--gold);">⚙️ 단원 및 문제 편집 센터 (클라우드 자동 저장)</h3>
-        <button onclick="closeAdminModal()" style="background:none; border:none; color:white; font-size:1.6rem; cursor:pointer;">&times;</button>
+        <button type="button" onclick="closeAdminModal()" style="background:none; border:none; color:white; font-size:1.6rem; cursor:pointer;">&times;</button>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center; justify-content:space-between;">
@@ -423,22 +414,55 @@
 
   <script>
     /* ====================================================================
-       Firebase 설정
+       1. 전역 변수 최상단 선언 (TDZ 참조 오류 100% 방지)
        ==================================================================== */
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIVt-SZ-0FcLfb3UaCMw0JSC9v0rB66bA",
-      authDomain: "quiz-quest-aaffc.firebaseapp.com",
-      databaseURL: "https://quiz-quest-aaffc-default-rtdb.firebaseio.com",
-      projectId: "quiz-quest-aaffc",
-      storageBucket: "quiz-quest-aaffc.firebasestorage.app",
-      messagingSenderId: "622531611074",
-      appId: "1:622531611074:web:5bebefb1ec63362da96e5b"
+    let db = null;
+    let globalQuestions = [];
+    let activeQuestions = [];
+    let gamePin = "ROOM1";
+    let myId = null;
+    let myName = "";
+    let myGold = 0;
+    let quizIntervalSec = 10;
+    let quizLimitSec = 10;
+    let currentPlayers = [];
+    let myWrongAnswers = [];
+    let gameDifficulty = "NORMAL";
+
+    let hasGameStarted = false;
+    let animFrameId = null;
+    let hostTimerId = null;
+    let toastTimeout = null;
+    let quizLimitTimer = null;
+    let currentQuizItem = null;
+
+    let canvas = null, ctx = null;
+    let plane = {
+      x: 200, y: 500, size: 28,
+      shotCount: 2,
+      damage: 1,
+      fireDelay: 0.20,
+      bulletSpeed: 420,
+      wingmen: 0,
+      piercePlasma: false,
+      scoreMult: 1,
+      shieldFlash: 0
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let bullets = [], enemyBullets = [], enemies = [], explosions = [], clouds = [], islands = [];
+    let isShootingActive = false;
+    let quizCountdownTimer = null;
+    let nextQuizTime = 10;
+    let oceanScrollY = 0;
+    let lastFrameTime = 0;
+    let fireCooldown = 0;
+    let enemySpawnTimer = 0;
+    let bossSpawnTimer = 0;
+    let propAngle = 0;
+    let totalPlaySeconds = 0;
+    let threatLevel = 1;
+    let bossStage = 1;
 
-    // 기본 탑재 문제
     const seedQuestions = [
       { id: "q1", unit: "2. 세포와 물질대사", q: "식물 세포에서 빛 에너지를 흡수하여 광합성을 수행하는 세포 소기관은?", opts: ["엽록체", "미토콘드리아", "리보솜", "골지체"], ans: 0 },
       { id: "q2", unit: "2. 세포와 물질대사", q: "유기물을 분해하여 생명 활동에 필요한 ATP를 주로 생산하는 세포 소기관은?", opts: ["미토콘드리아", "소포체", "중심체", "리소좀"], ans: 0 },
@@ -447,7 +471,6 @@
       { id: "q5", unit: "1. 생명의 특성", q: "가수 분해 효소가 들어 있어 세포 내 소화를 담당하는 소기관은?", opts: ["리소좀", "리보솜", "핵", "미토콘드리아"], ans: 0 }
     ];
 
-    // 11종 다채로운 아이템 카탈로그 및 기본 확률 가중치
     const itemCatalog = [
       { key: "MULTISHOT", name: "⚡ 주포 멀티샷 증설", desc: "동시 발사 탄환 줄 수 +1 (최대 7갈래)", defaultWeight: 18 },
       { key: "FIREPOWER", name: "🔥 기관포 화력·연사 개조", desc: "탄환 데미지 증가 + 연사 속도 상승", defaultWeight: 16 },
@@ -463,32 +486,61 @@
       { key: "SWAP_RANK", name: "🔄 운명의 순위 뒤집기 (SWAP)", desc: "원하는 상대(1등)와 내 골드를 1:1 맞교환!", defaultWeight: 1 }
     ];
 
+    const bossTypes = [
+      { name: "1단계: 이지스 구축함", color: "#475569", accent: "#38bdf8", baseHp: 140, reward: 400, pattern: "TRIPLE" },
+      { name: "2단계: 태평양 슈퍼 항공모함", color: "#334155", accent: "#f59e0b", baseHp: 350, reward: 800, pattern: "SPREAD5" },
+      { name: "3단계: 중장갑 공중요새 발키리", color: "#1e1b4b", accent: "#f43f5e", baseHp: 800, reward: 1500, pattern: "CIRCLE" },
+      { name: "4단계: 심해 잠수함 리바이어던", color: "#064e3b", accent: "#10b981", baseHp: 1800, reward: 3000, pattern: "AIMED_BURST" },
+      { name: "5단계+: 황금 기갑모함 엠퍼러", color: "#78350f", accent: "#fbbf24", baseHp: 3600, reward: 6000, pattern: "HELL_BARRAGE" }
+    ];
+
     let itemWeights = {};
     itemCatalog.forEach(it => itemWeights[it.key] = it.defaultWeight);
+    globalQuestions = [...seedQuestions];
 
-    let globalQuestions = [];
-    let activeQuestions = [];
-    let gamePin = "ROOM1";
-    let myId = null;
-    let myName = "";
-    let myGold = 0;
-    let quizIntervalSec = 10;
-    let quizLimitSec = 10;
-    let currentPlayers = [];
-    let myWrongAnswers = [];
-    let gameDifficulty = "NORMAL";
+    /* ====================================================================
+       2. Firebase 안전 초기화 (오류 시에도 UI 멈춤 방지)
+       ==================================================================== */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIVt-SZ-0FcLfb3UaCMw0JSC9v0rB66bA",
+      authDomain: "quiz-quest-aaffc.firebaseapp.com",
+      databaseURL: "https://quiz-quest-aaffc-default-rtdb.firebaseio.com",
+      projectId: "quiz-quest-aaffc",
+      storageBucket: "quiz-quest-aaffc.firebasestorage.app",
+      messagingSenderId: "622531611074",
+      appId: "1:622531611074:web:5bebefb1ec63362da96e5b"
+    };
 
-    let hasGameStarted = false;
-    let animFrameId = null;
+    try {
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+      }
+    } catch (err) {
+      console.error("Firebase init error:", err);
+    }
 
-    // 메인 화면으로 깨끗하게 돌아가기 (URL 쿼리 제거)
+    function switchScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+    }
+
     function goMainScreen() {
       const cleanUrl = window.location.href.split('?')[0];
       window.location.href = cleanUrl;
     }
 
-    // 클라우드 문제 은행 및 아이템 확률 로드
     function loadGlobalData(callback) {
+      if (!db) {
+        updateUnitSelectors();
+        renderAdminList();
+        if (callback) callback();
+        return;
+      }
+
       db.ref('global_bank').on('value', snap => {
         const data = snap.val();
         if (data && Array.isArray(data) && data.length > 0) {
@@ -516,42 +568,42 @@
       const units = Array.from(new Set(globalQuestions.map(q => q.unit || "기본 단원")));
 
       const hostSelect = document.getElementById('set-target-unit');
-      const curHost = hostSelect.value;
-      hostSelect.innerHTML = '<option value="ALL">전체 단원 랜덤</option>';
-      units.forEach(u => {
-        const opt = document.createElement('option');
-        opt.value = u; opt.textContent = u;
-        hostSelect.appendChild(opt);
-      });
-      if (units.includes(curHost)) hostSelect.value = curHost;
+      if (hostSelect) {
+        const curHost = hostSelect.value;
+        hostSelect.innerHTML = '<option value="ALL">전체 단원 랜덤</option>';
+        units.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u; opt.textContent = u;
+          hostSelect.appendChild(opt);
+        });
+        if (units.includes(curHost)) hostSelect.value = curHost;
+      }
 
       const filterSelect = document.getElementById('modal-unit-filter');
-      const curFilter = filterSelect.value;
-      filterSelect.innerHTML = '<option value="ALL">전체 단원 보기</option>';
-      units.forEach(u => {
-        const opt = document.createElement('option');
-        opt.value = u; opt.textContent = u;
-        filterSelect.appendChild(opt);
-      });
-      if (units.includes(curFilter)) filterSelect.value = curFilter;
+      if (filterSelect) {
+        const curFilter = filterSelect.value;
+        filterSelect.innerHTML = '<option value="ALL">전체 단원 보기</option>';
+        units.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u; opt.textContent = u;
+          filterSelect.appendChild(opt);
+        });
+        if (units.includes(curFilter)) filterSelect.value = curFilter;
+      }
 
       const dl = document.getElementById('unit-datalist');
-      dl.innerHTML = '';
-      units.forEach(u => {
-        const opt = document.createElement('option');
-        opt.value = u;
-        dl.appendChild(opt);
-      });
-    }
-
-    function switchScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      const target = document.getElementById(id);
-      if (target) target.classList.add('active');
+      if (dl) {
+        dl.innerHTML = '';
+        units.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u;
+          dl.appendChild(opt);
+        });
+      }
     }
 
     /* ====================================================================
-       교사용 아이템 확률 설정 모달 로직
+       3. 교사용 아이템 확률 설정 모달
        ==================================================================== */
     function openProbModal() {
       renderProbInputs();
@@ -606,17 +658,17 @@
     }
 
     function saveProbSettings() {
-      db.ref('global_item_weights').set(itemWeights);
-      if (gamePin) db.ref(`games/${gamePin}/itemWeights`).set(itemWeights);
+      if (db) {
+        db.ref('global_item_weights').set(itemWeights);
+        if (gamePin) db.ref(`games/${gamePin}/itemWeights`).set(itemWeights);
+      }
       alert("아이템 확률 설정이 클라우드에 영구 저장되었습니다!");
       closeProbModal();
     }
 
     /* ====================================================================
-       교사 호스트 제어 로직
+       4. 교사 호스트 제어 로직 (이중 QR 백업 탑재)
        ==================================================================== */
-    let hostTimerId = null;
-
     function initHost() {
       clearInterval(hostTimerId);
       document.getElementById('game-wrapper').style.display = 'none';
@@ -628,7 +680,21 @@
       document.getElementById('host-pin-val').textContent = gamePin;
       switchScreen('screen-host-lobby');
 
+      const joinUrl = window.location.href.split('?')[0] + `?pin=${gamePin}&role=player`;
+      const qrBox = document.getElementById("qrcode");
+      qrBox.innerHTML = "";
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(qrBox, { text: joinUrl, width: 140, height: 140 });
+        } else {
+          qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(joinUrl)}" width="140" height="140" alt="QR" />`;
+        }
+      } catch (e) {
+        qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(joinUrl)}" width="140" height="140" alt="QR" />`;
+      }
+
       loadGlobalData(() => {
+        if (!db) return;
         db.ref(`games/${gamePin}`).set({
           status: "LOBBY",
           quizInterval: 10,
@@ -642,23 +708,21 @@
         });
       });
 
-      const joinUrl = window.location.href.split('?')[0] + `?pin=${gamePin}&role=player`;
-      document.getElementById("qrcode").innerHTML = "";
-      new QRCode(document.getElementById("qrcode"), { text: joinUrl, width: 140, height: 140 });
-
-      db.ref(`games/${gamePin}/players`).on('value', snap => {
-        const val = snap.val() || {};
-        const grid = document.getElementById('student-grid');
-        grid.innerHTML = '';
-        const list = Object.values(val);
-        document.getElementById('player-count').textContent = `${list.length}명 입장`;
-        list.forEach(p => {
-          const badge = document.createElement('div');
-          badge.className = 'student-badge';
-          badge.textContent = `🛩️ ${p.name}`;
-          grid.appendChild(badge);
+      if (db) {
+        db.ref(`games/${gamePin}/players`).on('value', snap => {
+          const val = snap.val() || {};
+          const grid = document.getElementById('student-grid');
+          grid.innerHTML = '';
+          const list = Object.values(val);
+          document.getElementById('player-count').textContent = `${list.length}명 입장`;
+          list.forEach(p => {
+            const badge = document.createElement('div');
+            badge.className = 'student-badge';
+            badge.textContent = `🛩️ ${p.name}`;
+            grid.appendChild(badge);
+          });
         });
-      });
+      }
     }
 
     function hostStartGame() {
@@ -675,16 +739,18 @@
         return;
       }
 
-      db.ref(`games/${gamePin}`).update({
-        quizInterval: quizIntervalSec,
-        quizLimit: quizLimitSec,
-        targetUnit: chosenUnit,
-        difficulty: chosenDiff,
-        itemWeights: itemWeights,
-        questions: activeQuestions,
-        startTime: Date.now(),
-        status: "PLAYING"
-      });
+      if (db) {
+        db.ref(`games/${gamePin}`).update({
+          quizInterval: quizIntervalSec,
+          quizLimit: quizLimitSec,
+          targetUnit: chosenUnit,
+          difficulty: chosenDiff,
+          itemWeights: itemWeights,
+          questions: activeQuestions,
+          startTime: Date.now(),
+          status: "PLAYING"
+        });
+      }
 
       document.getElementById('host-unit-label').textContent = `단원: ${chosenUnit === 'ALL' ? '전체 단원' : chosenUnit} | 난이도: ${chosenDiff}`;
       document.getElementById('host-screen-title').textContent = "⚡ 실시간 전체 순위판";
@@ -700,7 +766,7 @@
         const s = String(remain % 60).padStart(2, '0');
         document.getElementById('host-timer-text').textContent = `${m}:${s}`;
 
-        const waveLv = Math.floor(elapsed / 30) + 1;
+        const waveLv = Math.floor(elapsed / 25) + 1;
         document.getElementById('host-wave-badge').textContent = `위협 단계: WAVE Lv.${waveLv}`;
 
         if (remain <= 0) {
@@ -709,44 +775,45 @@
         }
       }, 1000);
 
-      // 실시간 전체 순위 중계
-      db.ref(`games/${gamePin}/players`).on('value', snap => {
-        const val = snap.val() || {};
-        const sorted = Object.values(val).sort((a,b) => b.gold - a.gold);
-        const grid = document.getElementById('host-live-grid');
-        grid.innerHTML = '';
-        sorted.forEach((p, idx) => {
-          const item = document.createElement('div');
-          let rankClass = idx === 0 ? 'top1' : idx === 1 ? 'top2' : idx === 2 ? 'top3' : '';
-          item.className = `live-lb-item ${rankClass}`;
-          item.innerHTML = `<span>#${idx+1} ${p.name}</span><span style="color:var(--gold);">${p.gold.toLocaleString()} G</span>`;
-          grid.appendChild(item);
+      if (db) {
+        db.ref(`games/${gamePin}/players`).on('value', snap => {
+          const val = snap.val() || {};
+          const sorted = Object.values(val).sort((a,b) => b.gold - a.gold);
+          const grid = document.getElementById('host-live-grid');
+          grid.innerHTML = '';
+          sorted.forEach((p, idx) => {
+            const item = document.createElement('div');
+            let rankClass = idx === 0 ? 'top1' : idx === 1 ? 'top2' : idx === 2 ? 'top3' : '';
+            item.className = `live-lb-item ${rankClass}`;
+            item.innerHTML = `<span>#${idx+1} ${p.name}</span><span style="color:var(--gold);">${p.gold.toLocaleString()} G</span>`;
+            grid.appendChild(item);
+          });
         });
-      });
 
-      // 실시간 아이템/약탈 중계
-      db.ref(`games/${gamePin}/lastEvent`).on('value', snap => {
-        if (snap.val()) {
-          document.getElementById('host-live-event').textContent = `📢 ${snap.val()}`;
-        }
-      });
+        db.ref(`games/${gamePin}/lastEvent`).on('value', snap => {
+          if (snap.val()) {
+            document.getElementById('host-live-event').textContent = `📢 ${snap.val()}`;
+          }
+        });
+      }
     }
 
     function hostEndGame() {
       clearInterval(hostTimerId);
-      db.ref(`games/${gamePin}`).update({ status: "ENDED" });
+      if (db) db.ref(`games/${gamePin}`).update({ status: "ENDED" });
       document.getElementById('btn-host-finish').style.display = 'none';
       document.getElementById('btn-host-reopen').style.display = 'inline-block';
       document.getElementById('host-timer-text').textContent = "종료됨";
       document.getElementById('host-screen-title').textContent = "🏆 최종 순위 및 문항별 오답자 리포트";
 
       document.getElementById('host-report-section').style.display = 'flex';
-      db.ref(`games/${gamePin}/stats`).on('value', snap => {
-        renderHostStatsReport(snap.val() || {});
-      });
+      if (db) {
+        db.ref(`games/${gamePin}/stats`).on('value', snap => {
+          renderHostStatsReport(snap.val() || {});
+        });
+      }
     }
 
-    // 교사 화면: 문항별 오답률 + 오답 학생 실명/선택 선지 표시
     function renderHostStatsReport(stats) {
       const listEl = document.getElementById('host-stats-list');
       listEl.innerHTML = '';
@@ -759,7 +826,6 @@
         const correctRate = total > 0 ? 100 - wrongRate : 100;
         const isTricky = wrongRate >= 50 && total > 0;
 
-        // 오답 학생 명단 추출
         const wrongLogsObj = qStat.wrongLogs || {};
         const wrongEntries = Object.values(wrongLogsObj);
         let wrongChipsHtml = '';
@@ -792,17 +858,20 @@
     }
 
     /* ====================================================================
-       교사 문제 관리
+       5. 교사 문제 관리
        ==================================================================== */
     function openAdminModal() { document.getElementById('admin-modal').style.display = 'flex'; }
     function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; resetAdminForm(); }
 
     function renderAdminList() {
-      const filter = document.getElementById('modal-unit-filter').value;
+      const filterEl = document.getElementById('modal-unit-filter');
+      const filter = filterEl ? filterEl.value : "ALL";
       const filtered = filter === "ALL" ? globalQuestions : globalQuestions.filter(q => q.unit === filter);
 
-      document.getElementById('adm-q-count').textContent = filtered.length;
+      const countEl = document.getElementById('adm-q-count');
+      if (countEl) countEl.textContent = filtered.length;
       const list = document.getElementById('adm-q-list');
+      if (!list) return;
       list.innerHTML = '';
 
       filtered.forEach(q => {
@@ -815,8 +884,8 @@
             <span style="color:#86efac; font-size:0.75rem;"> (정답: ${q.opts[q.ans]})</span>
           </div>
           <div style="display:flex; gap:8px; white-space:nowrap;">
-            <button onclick="startEditQuestion('${q.id}')" style="background:none; border:none; color:var(--gold); cursor:pointer; font-weight:800;">수정</button>
-            <button onclick="delQuestion('${q.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:800;">삭제</button>
+            <button type="button" onclick="startEditQuestion('${q.id}')" style="background:none; border:none; color:var(--gold); cursor:pointer; font-weight:800;">수정</button>
+            <button type="button" onclick="delQuestion('${q.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:800;">삭제</button>
           </div>
         `;
         list.appendChild(row);
@@ -868,7 +937,7 @@
         globalQuestions.push({ id: "q_" + Date.now(), unit, q: qText, opts: [ans, w1, w2, w3], ans: 0 });
       }
 
-      db.ref('global_bank').set(globalQuestions);
+      if (db) db.ref('global_bank').set(globalQuestions);
       resetAdminForm();
       updateUnitSelectors();
       renderAdminList();
@@ -877,13 +946,13 @@
     function delQuestion(id) {
       if (!confirm("이 문제를 영구 삭제하시겠습니까?")) return;
       globalQuestions = globalQuestions.filter(q => q.id !== id);
-      db.ref('global_bank').set(globalQuestions);
+      if (db) db.ref('global_bank').set(globalQuestions);
       updateUnitSelectors();
       renderAdminList();
     }
 
     /* ====================================================================
-       학생 플레이어 로직
+       6. 학생 플레이어 로직
        ==================================================================== */
     function initPlayerEntry() {
       const p = new URLSearchParams(window.location.search);
@@ -897,9 +966,12 @@
       myName = name;
       myId = "p_" + Math.random().toString(36).substr(2, 9);
 
-      db.ref(`games/${gamePin}/players/${myId}`).set({ id: myId, name: myName, gold: 0, alertMsg: "" });
       document.getElementById('wait-name-display').textContent = `${myName} 파일럿 대기 완료!`;
       switchScreen('screen-player-wait');
+
+      if (!db) return;
+
+      db.ref(`games/${gamePin}/players/${myId}`).set({ id: myId, name: myName, gold: 0, alertMsg: "" });
 
       db.ref(`games/${gamePin}/status`).on('value', snap => {
         const status = snap.val();
@@ -943,6 +1015,7 @@
       document.getElementById('hud-my-rank').textContent = `#${myRank > 0 ? myRank : '-'}위 | WAVE ${threatLevel}`;
 
       const ticker = document.getElementById('hud-rank-ticker');
+      if (!ticker) return;
       ticker.innerHTML = '';
       currentPlayers.slice(0, 10).forEach((p, idx) => {
         const el = document.createElement('div');
@@ -952,9 +1025,9 @@
       });
     }
 
-    let toastTimeout = null;
     function showToast(msg) {
       const t = document.getElementById('reward-toast');
+      if (!t) return;
       t.textContent = msg;
       t.style.display = 'block';
       clearTimeout(toastTimeout);
@@ -962,46 +1035,8 @@
     }
 
     /* ====================================================================
-       1945 태평양 해전 탄막 슈팅 엔진 (다단계 진화 보스 & 웨이브 난이도 상승)
+       7. 1945 태평양 해전 탄막 슈팅 엔진
        ==================================================================== */
-    let canvas, ctx;
-    let plane = {
-      x: 200, y: 500, size: 28,
-      shotCount: 2,
-      damage: 1,
-      fireDelay: 0.20,
-      bulletSpeed: 420,
-      wingmen: 0,
-      piercePlasma: false,
-      scoreMult: 1,
-      shieldFlash: 0
-    };
-
-    // 5단계 진화형 보스 도감
-    const bossTypes = [
-      { name: "1단계: 이지스 구축함", color: "#475569", accent: "#38bdf8", baseHp: 140, reward: 400, pattern: "TRIPLE" },
-      { name: "2단계: 태평양 슈퍼 항공모함", color: "#334155", accent: "#f59e0b", baseHp: 350, reward: 800, pattern: "SPREAD5" },
-      { name: "3단계: 중장갑 공중요새 발키리", color: "#1e1b4b", accent: "#f43f5e", baseHp: 800, reward: 1500, pattern: "CIRCLE" },
-      { name: "4단계: 심해 잠수함 리바이어던", color: "#064e3b", accent: "#10b981", baseHp: 1800, reward: 3000, pattern: "AIMED_BURST" },
-      { name: "5단계+: 황금 기갑모함 엠퍼러", color: "#78350f", accent: "#fbbf24", baseHp: 3600, reward: 6000, pattern: "HELL_BARRAGE" }
-    ];
-
-    let bullets = [], enemyBullets = [], enemies = [], explosions = [], clouds = [], islands = [];
-    let isShootingActive = false;
-    let quizCountdownTimer = null;
-    let nextQuizTime = 10;
-    let oceanScrollY = 0;
-    let lastFrameTime = 0;
-    let fireCooldown = 0;
-    let enemySpawnTimer = 0;
-    let bossSpawnTimer = 0;
-    let propAngle = 0;
-
-    // 난이도 상승용 타이머 및 보스 스테이지
-    let totalPlaySeconds = 0;
-    let threatLevel = 1;
-    let bossStage = 1;
-
     function startFlightMode() {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById('game-wrapper').style.display = 'flex';
@@ -1071,7 +1106,6 @@
       }, 1000);
     }
 
-    // 메인 게임 루프
     function gameLoop(timestamp) {
       if (!isShootingActive) return;
 
@@ -1080,7 +1114,6 @@
       lastFrameTime = timestamp;
       propAngle += dt * 25;
 
-      // 시간 경과에 따른 위협 단계(WAVE) 자동 상승 (25초마다 난이도 대폭 상승)
       totalPlaySeconds += dt;
       const newThreat = Math.floor(totalPlaySeconds / 25) + 1;
       if (newThreat > threatLevel) {
@@ -1091,18 +1124,15 @@
 
       if (plane.shieldFlash > 0) plane.shieldFlash -= dt;
 
-      // 1. 바다 배경
       oceanScrollY = (oceanScrollY + dt * (32 + threatLevel * 4)) % 60;
       drawPacificOceanBackground(dt);
 
-      // 2. 아군 탄환 발사
       fireCooldown -= dt;
       if (fireCooldown <= 0) {
         shoot1945Bullets();
         fireCooldown = plane.fireDelay;
       }
 
-      // 3. 시간 비례 적군 스폰 (후반으로 갈수록 스폰 주기 급감)
       enemySpawnTimer -= dt;
       const baseSpawn = gameDifficulty === 'HELL' ? 0.72 : gameDifficulty === 'HARD' ? 0.90 : 1.15;
       const currentSpawnInterval = Math.max(0.32, baseSpawn - (threatLevel - 1) * 0.14);
@@ -1111,7 +1141,6 @@
         enemySpawnTimer = currentSpawnInterval;
       }
 
-      // 4. 보스 스폰 (보스가 없을 때 10초마다 새 단계 보스 출현)
       const existingBoss = enemies.find(e => e.type === 'boss');
       if (!existingBoss) {
         bossSpawnTimer += dt;
@@ -1123,13 +1152,11 @@
 
       let activeBoss = null;
 
-      // 5. 적군 업데이트 & 렌더링
       for (let i = enemies.length - 1; i >= 0; i--) {
         const en = enemies[i];
 
         if (en.type === 'boss') {
           activeBoss = en;
-          // 보스는 상공(y=155)까지 내려온 뒤 좌우로 왕복 기동하며 끝까지 교전!
           if (en.y < 155) {
             en.y += en.vy * dt;
           } else {
@@ -1147,7 +1174,6 @@
           drawEnemyHealthBar(en);
         }
 
-        // 적 탄환 발사
         en.shootCooldown -= dt;
         if (en.shootCooldown <= 0 && en.y > 20 && en.y < canvas.height - 100) {
           shootEnemyBullet(en);
@@ -1155,7 +1181,6 @@
           en.shootCooldown = cdBase;
         }
 
-        // 아군 탄환 vs 적 충돌 판정
         const hitRadius = en.type === 'boss' ? 56 : en.type === 'bomber' ? 32 : 22;
         for (let j = bullets.length - 1; j >= 0; j--) {
           const b = bullets[j];
@@ -1163,11 +1188,10 @@
             en.hp -= b.dmg;
             spawnExplosion(b.x, b.y, 'small');
 
-            // 플라즈마 관통탄이 아니면 탄환 소멸
             if (!b.pierce) {
               bullets.splice(j, 1);
             } else {
-              b.dmg *= 0.65; // 관통 시 데미지 감쇠
+              b.dmg *= 0.65;
               if (b.dmg < 0.5) bullets.splice(j, 1);
             }
 
@@ -1193,7 +1217,6 @@
         }
       }
 
-      // 6. 적군 탄환 업데이트 (피격 페널티 없음: 쉴드 파동만 발생)
       for (let i = enemyBullets.length - 1; i >= 0; i--) {
         const eb = enemyBullets[i];
         eb.x += eb.vx * dt;
@@ -1220,7 +1243,6 @@
         }
       }
 
-      // 7. 아군 탄환 렌더링
       for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
         b.x += b.vx * dt;
@@ -1250,15 +1272,12 @@
         if (b.y < -25) bullets.splice(i, 1);
       }
 
-      // 8. 플레이어 기체 및 호위기 편대
       draw1945PlayerFormation(plane.x, plane.y);
 
-      // 9. 보스 전용 상단 체력바
       if (activeBoss) {
         drawCinematicBossHealthBar(activeBoss);
       }
 
-      // 10. 폭발 & 구름
       updateAndDrawExplosions(dt);
       drawParallaxClouds(dt);
 
@@ -1268,12 +1287,9 @@
     function addPlayerGold(amount) {
       myGold = Math.max(0, Math.floor(myGold + amount));
       document.getElementById('hud-my-score').textContent = `${myGold.toLocaleString()} G`;
-      db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+      if (db) db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
     }
 
-    /* ====================================================================
-       체력바 및 다단계 보스 드로잉
-       ==================================================================== */
     function drawEnemyHealthBar(en) {
       const w = en.type === 'bomber' ? 38 : en.type === 'heli' ? 28 : 22;
       const h = 4;
@@ -1320,7 +1336,6 @@
       ctx.restore();
     }
 
-    // 단계별 진화형 보스 스폰 (잡을 때마다 외형·패턴 변경 및 체력 대폭 증가)
     function spawnStageBoss() {
       const idx = Math.min(bossTypes.length - 1, bossStage - 1);
       const spec = bossTypes[idx];
@@ -1351,7 +1366,6 @@
       ctx.translate(en.x, en.y);
 
       if (en.stage % 3 === 0) {
-        // 공중요새 거대 폭격기 형태
         ctx.fillStyle = en.hullColor;
         ctx.strokeStyle = en.accent;
         ctx.lineWidth = 2.5;
@@ -1364,7 +1378,6 @@
         ctx.closePath();
         ctx.fill(); ctx.stroke();
 
-        // 4연장 플라즈마 코어
         ctx.fillStyle = en.accent;
         [-45, -18, 18, 45].forEach(px => {
           ctx.beginPath();
@@ -1372,7 +1385,6 @@
           ctx.fill();
         });
       } else {
-        // 거대 주력 전함 / 항공모함 형태
         ctx.fillStyle = en.hullColor;
         ctx.strokeStyle = en.accent;
         ctx.lineWidth = 2.5;
@@ -1386,7 +1398,6 @@
         ctx.closePath();
         ctx.fill(); ctx.stroke();
 
-        // 갑판 라인
         ctx.strokeStyle = "rgba(255,255,255,0.35)";
         ctx.setLineDash([8, 6]);
         ctx.beginPath();
@@ -1394,7 +1405,6 @@
         ctx.moveTo(24, -65); ctx.lineTo(24, 35);
         ctx.stroke(); ctx.setLineDash([]);
 
-        // 포탑 코어
         ctx.fillStyle = en.accent;
         ctx.beginPath();
         ctx.arc(0, 22, 15, 0, Math.PI * 2);
@@ -1403,13 +1413,9 @@
         ctx.fillRect(-6, 28, 4, 20);
         ctx.fillRect(2, 28, 4, 20);
       }
-
       ctx.restore();
     }
 
-    /* ====================================================================
-       배경, 일반 적기, 아군 편대 및 무기 발사
-       ==================================================================== */
     function drawPacificOceanBackground(dt) {
       ctx.fillStyle = "#0b4f8a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1547,7 +1553,6 @@
       ctx.restore();
     }
 
-    // 위협 단계(threatLevel)에 따라 체력과 물량이 급증하는 적 스폰
     function spawnEnemyFormation() {
       const diffMult = gameDifficulty === 'HELL' ? 1.45 : gameDifficulty === 'HARD' ? 1.25 : 1.0;
       const waveHpScale = (1 + (threatLevel - 1) * 0.9) * diffMult;
@@ -1555,7 +1560,6 @@
       const roll = Math.random();
 
       if (roll < 0.35) {
-        // V자 편대 (웨이브가 오르면 4기 -> 6기)
         const count = threatLevel >= 3 ? 6 : 4;
         const startX = Math.random() * (canvas.width - 160) + 80;
         for (let i = 0; i < count; i++) {
@@ -1570,7 +1574,6 @@
           });
         }
       } else if (roll < 0.65) {
-        // 사선 고속 돌격 편대
         const isLeft = Math.random() < 0.5;
         const count = threatLevel >= 4 ? 5 : 3;
         for (let i = 0; i < count; i++) {
@@ -1586,7 +1589,6 @@
           });
         }
       } else if (roll < 0.85) {
-        // 회전익 강습 헬기
         const hp = Math.round(12 * waveHpScale);
         for (let i = 0; i < 2; i++) {
           enemies.push({
@@ -1599,7 +1601,6 @@
           });
         }
       } else {
-        // 중장갑 폭격기
         const hp = Math.round(24 * waveHpScale);
         enemies.push({
           type: 'bomber',
@@ -1622,7 +1623,6 @@
             enemyBullets.push({ x: en.x + a * 15, y: en.y + 45, vx: a * 45, vy: 175, color: "#fbbf24" });
           }
         } else {
-          // 고단계 보스 전방위/조준 복합 사격
           for (let a = -3; a <= 3; a++) {
             enemyBullets.push({ x: en.x, y: en.y + 35, vx: a * 42, vy: 185, color: "#f43f5e" });
           }
@@ -1769,11 +1769,8 @@
     }
 
     /* ====================================================================
-       퀴즈 출제 & 오답자 실명 기록 + 가중치 기반 상자 뽑기
+       8. 퀴즈 출제 & 오답자 기록 & 가중치 상자 추첨
        ==================================================================== */
-    let quizLimitTimer = null;
-    let currentQuizItem = null;
-
     function triggerQuizEvent() {
       isShootingActive = false;
       if (animFrameId) cancelAnimationFrame(animFrameId);
@@ -1820,22 +1817,24 @@
     function handleAnswerSelect(isCorrect, selectedText, qId) {
       document.getElementById('quiz-overlay').style.display = 'none';
 
-      // 문항별 정답/오답 횟수 및 오답 학생 실명 기록
-      const statRef = db.ref(`games/${gamePin}/stats/${qId}`);
-      statRef.transaction(current => {
-        if (!current) current = { attempts: 0, wrongs: 0 };
-        current.attempts = (current.attempts || 0) + 1;
-        if (!isCorrect) current.wrongs = (current.wrongs || 0) + 1;
-        return current;
-      });
-
-      if (!isCorrect) {
-        // 누가 어떤 오답을 골랐는지 Firebase에 저장
-        db.ref(`games/${gamePin}/stats/${qId}/wrongLogs`).push({
-          name: myName,
-          choice: selectedText
+      if (db) {
+        const statRef = db.ref(`games/${gamePin}/stats/${qId}`);
+        statRef.transaction(current => {
+          if (!current) current = { attempts: 0, wrongs: 0 };
+          current.attempts = (current.attempts || 0) + 1;
+          if (!isCorrect) current.wrongs = (current.wrongs || 0) + 1;
+          return current;
         });
 
+        if (!isCorrect) {
+          db.ref(`games/${gamePin}/stats/${qId}/wrongLogs`).push({
+            name: myName,
+            choice: selectedText
+          });
+        }
+      }
+
+      if (!isCorrect) {
         myWrongAnswers.push({
           unit: currentQuizItem.unit || '기타',
           question: currentQuizItem.q,
@@ -1865,7 +1864,6 @@
       }, 1000);
     }
 
-    // 교사가 설정한 확률 가중치에 따른 아이템 추첨
     function rollWeightedItem() {
       const entries = Object.entries(itemWeights).filter(([k, w]) => Number(w) > 0);
       if (entries.length === 0) return "MULTISHOT";
@@ -1879,7 +1877,7 @@
     }
 
     function broadcastGameEvent(msg) {
-      db.ref(`games/${gamePin}/lastEvent`).set(msg);
+      if (db) db.ref(`games/${gamePin}/lastEvent`).set(msg);
     }
 
     function pickRewardChest(idx) {
@@ -1931,7 +1929,6 @@
           break;
 
         case "NUKE":
-          // 전술 핵폭탄: 일반 적 전멸 + 보스 체력 35% 강타
           let nukeGold = 300;
           for (let i = enemies.length - 1; i >= 0; i--) {
             const en = enemies[i];
@@ -1979,7 +1976,7 @@
           let totalTax = 0;
           others.forEach(p => {
             const tax = Math.floor(p.gold * 0.15);
-            if (tax > 0) {
+            if (tax > 0 && db) {
               totalTax += tax;
               db.ref(`games/${gamePin}/players/${p.id}`).update({
                 gold: Math.max(0, p.gold - tax),
@@ -2028,10 +2025,12 @@
           document.getElementById('target-overlay').style.display = 'none';
           if (mode === "STEAL") {
             const stolen = Math.floor(target.gold * 0.40);
-            db.ref(`games/${gamePin}/players/${target.id}`).update({
-              gold: Math.max(0, target.gold - stolen),
-              alertMsg: `🚨 ${myName} 님에게 골드 40%(-${stolen.toLocaleString()}G)를 강탈당했습니다!`
-            });
+            if (db) {
+              db.ref(`games/${gamePin}/players/${target.id}`).update({
+                gold: Math.max(0, target.gold - stolen),
+                alertMsg: `🚨 ${myName} 님에게 골드 40%(-${stolen.toLocaleString()}G)를 강탈당했습니다!`
+              });
+            }
             addPlayerGold(stolen);
             broadcastGameEvent(`🦹 ${myName} 님이 ${target.name} 님의 골드 ${stolen.toLocaleString()}G를 강탈했습니다!`);
             showToast(`🦹 '${target.name}' 님의 골드 ${stolen.toLocaleString()}G 강탈 성공!`);
@@ -2039,11 +2038,13 @@
             const theirGold = target.gold;
             const myOldGold = myGold;
             myGold = theirGold;
-            db.ref(`games/${gamePin}/players/${target.id}`).update({
-              gold: myOldGold,
-              alertMsg: `🔄 ${myName} 님이 순위 뒤집기(SWAP)로 당신과 골드를 맞바꿨습니다!`
-            });
-            db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+            if (db) {
+              db.ref(`games/${gamePin}/players/${target.id}`).update({
+                gold: myOldGold,
+                alertMsg: `🔄 ${myName} 님이 순위 뒤집기(SWAP)로 당신과 골드를 맞바꿨습니다!`
+              });
+              db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+            }
             document.getElementById('hud-my-score').textContent = `${myGold.toLocaleString()} G`;
             broadcastGameEvent(`🔄 [대역전] ${myName} 님이 ${target.name} 님과 보유 골드를 맞바꿨습니다!`);
             showToast(`🔄 '${target.name}' 님과 골드 SWAP 대역전 성공!`);
@@ -2138,13 +2139,14 @@
       });
     }
 
-    window.onload = () => {
+    // 페이지 로드 시 URL 분기 처리
+    window.addEventListener('DOMContentLoaded', () => {
       const p = new URLSearchParams(window.location.search);
       if (p.get('role') === 'player' && p.get('pin')) {
         gamePin = p.get('pin');
         switchScreen('screen-player-login');
       }
-    };
+    });
   </script>
 </body>
 </html>
