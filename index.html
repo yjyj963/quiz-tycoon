@@ -46,10 +46,10 @@
     .student-grid { background: #07111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; min-height: 220px; max-height: 280px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
     .student-badge { background: #1e3a5f; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 0.9rem; border: 1px solid #38bdf8; }
 
-    .host-settings-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; width: 100%; }
-    .setting-box { background: #07111e; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 4px; }
-    .setting-box label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
-    .setting-box select { background: #07111e; border: none; color: white; font-weight: 800; font-size: 0.9rem; outline: none; cursor: pointer; }
+    .host-settings-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 16px; width: 100%; }
+    .setting-box { background: #07111e; border: 1px solid var(--card-border); padding: 10px 10px; border-radius: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .setting-box label { font-size: 0.72rem; color: #94a3b8; font-weight: 700; }
+    .setting-box select { background: #07111e; border: none; color: white; font-weight: 800; font-size: 0.85rem; outline: none; cursor: pointer; }
 
     /* 교사용 실시간 순위판 & 통계 화면 */
     .host-live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; width: 100%; max-height: 42vh; overflow-y: auto; }
@@ -75,6 +75,9 @@
     /* ================= 학생 슈팅 화면 ================= */
     #game-wrapper { width: 100%; max-width: 460px; height: 96vh; position: relative; border-radius: 18px; overflow: hidden; border: 3px solid #38bdf8; background: #0b4f8a; display: none; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.9); touch-action: none; }
     #flightCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+
+    /* 피격 시 화면 붉은 플래시 */
+    .damage-flash { position: absolute; inset: 0; background: rgba(239, 68, 68, 0.35); pointer-events: none; z-index: 30; display: none; }
 
     .hud-top-frame { position: absolute; top: 8px; left: 8px; right: 8px; height: 56px; background: rgba(7, 17, 30, 0.9); border: 2px solid #fbbf24; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 10; backdrop-filter: blur(4px); }
     .hud-score-val { font-size: 1.2rem; font-weight: 900; color: var(--gold); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
@@ -132,11 +135,16 @@
     .prob-item { background: #07111e; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .prob-item input { width: 65px; background: #0f1e36; border: 1px solid #38bdf8; color: var(--gold); padding: 6px; border-radius: 6px; font-weight: 900; text-align: center; }
 
+    @media (max-width: 860px) {
+      .host-settings-bar { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 780px) {
       .lobby-body { grid-template-columns: 1fr; }
-      .host-settings-bar { grid-template-columns: 1fr 1fr; }
       .host-live-grid { grid-template-columns: 1fr; }
       .prob-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 580px) {
+      .host-settings-bar { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -183,6 +191,7 @@
         </div>
       </div>
 
+      <!-- 교사 실시간 설정창 (피격 패널티 선택 추가) -->
       <div class="host-settings-bar">
         <div class="setting-box" style="border-color: var(--cyan);">
           <label style="color: var(--cyan);">📖 출제 단원 선택</label>
@@ -196,6 +205,15 @@
             <option value="NORMAL" selected>보통 (웨이브 상승)</option>
             <option value="HARD">어려움 (고속 압박)</option>
             <option value="HELL">탄막 지옥 (하드코어)</option>
+          </select>
+        </div>
+        <div class="setting-box" style="border-color: #ef4444;">
+          <label style="color: #ef4444;">💥 피격 패널티</label>
+          <select id="set-hit-penalty">
+            <option value="0" selected>없음 (무적 보호)</option>
+            <option value="5">가벼움 (-5G)</option>
+            <option value="15">보통 (-15G)</option>
+            <option value="30">매운맛 (-30G)</option>
           </select>
         </div>
         <div class="setting-box">
@@ -277,6 +295,9 @@
 
     <!-- 6. 학생: 1945 해전 슈팅 화면 -->
     <div id="game-wrapper">
+      <!-- 피격 시 붉은 플래시 연출 -->
+      <div class="damage-flash" id="damage-flash"></div>
+
       <div class="hud-top-frame">
         <div>
           <div class="hud-rank-tag" id="hud-my-rank">#1위 | WAVE 1</div>
@@ -428,6 +449,7 @@
     let currentPlayers = [];
     let myWrongAnswers = [];
     let gameDifficulty = "NORMAL";
+    let hitPenalty = 0; // 피격 패널티 변수 (0: 없음, 5, 15, 30)
 
     let hasGameStarted = false;
     let animFrameId = null;
@@ -499,7 +521,7 @@
     globalQuestions = [...seedQuestions];
 
     /* ====================================================================
-       2. Firebase 안전 초기화 (오류 시에도 UI 멈춤 방지)
+       2. Firebase 안전 초기화
        ==================================================================== */
     const firebaseConfig = {
       apiKey: "AIzaSyDIVt-SZ-0FcLfb3UaCMw0JSC9v0rB66bA",
@@ -673,7 +695,7 @@
     }
 
     /* ====================================================================
-       4. 교사 호스트 제어 로직 (이중 QR 백업 탑재)
+       4. 교사 호스트 제어 로직 (비밀번호 잠금 + 패널티 설정 전달)
        ==================================================================== */
     function initHost() {
       const pw = prompt("교사용 비밀번호를 입력하세요:");
@@ -710,6 +732,7 @@
           quizLimit: 10,
           targetUnit: "ALL",
           difficulty: "NORMAL",
+          hitPenalty: 0,
           itemWeights: itemWeights,
           players: {},
           stats: {},
@@ -740,6 +763,7 @@
       quizLimitSec = parseInt(document.getElementById('set-quiz-limit').value);
       const chosenUnit = document.getElementById('set-target-unit').value;
       const chosenDiff = document.getElementById('set-difficulty').value;
+      const chosenPenalty = parseInt(document.getElementById('set-hit-penalty').value) || 0;
 
       activeQuestions = chosenUnit === "ALL" ? [...globalQuestions] : globalQuestions.filter(q => q.unit === chosenUnit);
 
@@ -754,6 +778,7 @@
           quizLimit: quizLimitSec,
           targetUnit: chosenUnit,
           difficulty: chosenDiff,
+          hitPenalty: chosenPenalty, // 피격 패널티 실시간 전송
           itemWeights: itemWeights,
           questions: activeQuestions,
           startTime: Date.now(),
@@ -761,7 +786,8 @@
         });
       }
 
-      document.getElementById('host-unit-label').textContent = `단원: ${chosenUnit === 'ALL' ? '전체 단원' : chosenUnit} | 난이도: ${chosenDiff}`;
+      const penaltyLabel = chosenPenalty > 0 ? `피격 -${chosenPenalty}G` : `피격 무적`;
+      document.getElementById('host-unit-label').textContent = `단원: ${chosenUnit === 'ALL' ? '전체 단원' : chosenUnit} | 난이도: ${chosenDiff} (${penaltyLabel})`;
       document.getElementById('host-screen-title').textContent = "⚡ 실시간 전체 순위판";
       switchScreen('screen-host-live');
 
@@ -992,6 +1018,7 @@
             quizLimitSec = g.quizLimit || 10;
             activeQuestions = g.questions || seedQuestions;
             gameDifficulty = g.difficulty || "NORMAL";
+            hitPenalty = g.hitPenalty !== undefined ? g.hitPenalty : 0; // 패널티 수신
             if (g.itemWeights) itemWeights = g.itemWeights;
             startFlightMode();
           });
@@ -1044,7 +1071,7 @@
     }
 
     /* ====================================================================
-       7. 1945 태평양 해전 탄막 슈팅 엔진
+       7. 1945 태평양 해전 탄막 슈팅 엔진 (피격 패널티 & 골드 차감 로직 연동)
        ==================================================================== */
     function startFlightMode() {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1221,6 +1248,11 @@
           }
         }
 
+        // 적기와 플레이어 충돌 시 피격 판정
+        if (Math.hypot(plane.x - en.x, plane.y - en.y) < hitRadius + 14) {
+          triggerPlayerShieldAbsorb(en.x, en.y);
+        }
+
         if (en.type !== 'boss' && (en.y > canvas.height + 100 || en.x < -100 || en.x > canvas.width + 100)) {
           enemies.splice(i, 1);
         }
@@ -1240,10 +1272,10 @@
         ctx.arc(eb.x, eb.y, 2, 0, Math.PI * 2);
         ctx.fill();
 
+        // 적 탄환에 맞았을 때 피격 판정
         if (Math.hypot(plane.x - eb.x, plane.y - eb.y) < 24) {
           enemyBullets.splice(i, 1);
-          plane.shieldFlash = 0.22;
-          spawnExplosion(eb.x, eb.y, 'small');
+          triggerPlayerShieldAbsorb(eb.x, eb.y);
           continue;
         }
 
@@ -1291,6 +1323,24 @@
       drawParallaxClouds(dt);
 
       animFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // 피격 처리: 쉴드 방어 파동 + (패널티 설정 시) 골드 차감 및 붉은 플래시
+    function triggerPlayerShieldAbsorb(hitX, hitY) {
+      plane.shieldFlash = 0.22;
+      spawnExplosion(hitX, hitY, 'small');
+
+      if (hitPenalty > 0 && myGold > 0) {
+        myGold = Math.max(0, myGold - hitPenalty);
+        document.getElementById('hud-my-score').textContent = `${myGold.toLocaleString()} G`;
+        if (db) db.ref(`games/${gamePin}/players/${myId}`).update({ gold: myGold });
+
+        const flash = document.getElementById('damage-flash');
+        if (flash) {
+          flash.style.display = 'block';
+          setTimeout(() => { flash.style.display = 'none'; }, 100);
+        }
+      }
     }
 
     function addPlayerGold(amount) {
@@ -1556,7 +1606,6 @@
         ctx.fillStyle = "#fef08a";
         ctx.beginPath();
         ctx.arc(-22, 0, 3, 0, Math.PI * 2);
-        ctx.arc(22, 0, 3, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
